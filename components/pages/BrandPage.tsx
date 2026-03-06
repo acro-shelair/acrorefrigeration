@@ -8,6 +8,7 @@ import { ArrowRight, Phone, CheckCircle, Wrench } from "lucide-react";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
+import { brandDetails } from "@/data/brands";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -23,157 +24,9 @@ const cardVariant: Variants = {
   }),
 };
 
-const brandsData: Record<string, {
-  name: string;
-  tagline: string;
-  heroDesc: string;
-  stats: { value: string; label: string }[];
-  about: string;
-  commonIssues: { title: string; desc: string }[];
-  services: string[];
-  productTypes: string[];
-  relatedBrands: { slug: string; name: string; desc: string }[];
-}> = {
-  bitzer: {
-    name: "Bitzer",
-    tagline: "Authorised Bitzer Compressor Repairs & Servicing",
-    heroDesc: "Specialist Bitzer compressor diagnostics, repairs and maintenance. Our technicians are trained on the full Bitzer range — from semi-hermetic reciprocating compressors to screw compressors and condensing units.",
-    stats: [
-      { value: "500+", label: "Bitzer Repairs" },
-      { value: "98%", label: "First-Visit Fix" },
-      { value: "24/7", label: "Emergency Service" },
-      { value: "15yr", label: "Bitzer Experience" },
-    ],
-    about: "Bitzer is one of the world's leading manufacturers of refrigeration compressors, trusted across commercial and industrial applications. Their semi-hermetic and screw compressors are the backbone of cold rooms, supermarket systems and industrial facilities across Australia. When a Bitzer compressor fails, you need a technician who knows the product inside-out — not a generalist who's guessing.",
-    commonIssues: [
-      { title: "Compressor Burnout", desc: "Electrical or mechanical failure requiring expert diagnosis to identify root cause and prevent recurrence." },
-      { title: "Oil Logging & Migration", desc: "Incorrect oil levels or migration causing reduced efficiency and potential compressor damage." },
-      { title: "Valve Plate Failure", desc: "Worn or damaged valve plates reducing compression efficiency and increasing energy consumption." },
-      { title: "Electrical Contactor Issues", desc: "Failed contactors and overloads causing intermittent starting or complete failure to start." },
-      { title: "Refrigerant Leaks", desc: "Shaft seal or gasket leaks requiring specialist tools and certified refrigerant handling." },
-      { title: "Capacity Control Faults", desc: "Unloader or capacity control issues causing systems to run inefficiently or short-cycle." },
-    ],
-    services: [
-      "Emergency compressor repairs — 24/7",
-      "Compressor overhauls and rebuilds",
-      "Oil analysis and management",
-      "Valve plate replacement",
-      "Electrical diagnostics and contactor replacement",
-      "Refrigerant leak detection and repair",
-      "Capacity control servicing",
-      "Preventative maintenance programs",
-      "Genuine Bitzer parts supply",
-      "System efficiency assessments",
-    ],
-    productTypes: [
-      "Semi-Hermetic Reciprocating Compressors",
-      "Screw Compressors",
-      "Scroll Compressors",
-      "Condensing Units",
-      "Pressure Vessels",
-      "Oil Separators",
-    ],
-    relatedBrands: [
-      { slug: "copeland", name: "Copeland", desc: "Scroll and semi-hermetic compressor repairs and servicing." },
-      { slug: "danfoss", name: "Danfoss", desc: "Controls, compressors and valve repairs across all product lines." },
-      { slug: "daikin", name: "Daikin", desc: "Commercial refrigeration and air conditioning system servicing." },
-    ],
-  },
-  copeland: {
-    name: "Copeland",
-    tagline: "Expert Copeland Compressor Repairs & Servicing",
-    heroDesc: "Trusted Copeland scroll and semi-hermetic compressor servicing. We diagnose and repair the full Copeland range used in commercial refrigeration and air conditioning systems across SEQ.",
-    stats: [
-      { value: "400+", label: "Copeland Repairs" },
-      { value: "98%", label: "First-Visit Fix" },
-      { value: "24/7", label: "Emergency Service" },
-      { value: "12yr", label: "Copeland Experience" },
-    ],
-    about: "Copeland (formerly Emerson Climate Technologies) manufactures some of the most widely used scroll and semi-hermetic compressors in the commercial refrigeration industry. Found in everything from supermarket display cases to cold rooms and food processing facilities, Copeland compressors are reliable — but when they fail, specialist knowledge is essential for fast, correct diagnosis.",
-    commonIssues: [
-      { title: "Scroll Compressor Failure", desc: "Internal scroll wear or seizure requiring replacement or rebuild." },
-      { title: "Liquid Slugging", desc: "Liquid refrigerant entering the compressor causing mechanical damage." },
-      { title: "High Discharge Temperature", desc: "Overheating due to low charge, dirty condensers or restricted airflow." },
-      { title: "Start Component Failure", desc: "Failed start capacitors, relays or run capacitors preventing startup." },
-      { title: "Oil Return Issues", desc: "Poor oil return causing lubrication failure and compressor wear." },
-      { title: "Internal Relief Valve Trips", desc: "High compression ratios causing the internal relief to open repeatedly." },
-    ],
-    services: [
-      "Emergency compressor diagnostics and repairs",
-      "Scroll compressor replacement",
-      "Electrical component testing and replacement",
-      "Refrigerant charge correction",
-      "Oil level and return system servicing",
-      "Condenser cleaning and airflow optimisation",
-      "System performance testing",
-      "Preventative maintenance contracts",
-      "Genuine Copeland parts supply",
-      "Compressor upgrade recommendations",
-    ],
-    productTypes: [
-      "Scroll Compressors",
-      "Semi-Hermetic Compressors",
-      "Digital Scroll Compressors",
-      "Condensing Units",
-      "Compressor Racks",
-    ],
-    relatedBrands: [
-      { slug: "bitzer", name: "Bitzer", desc: "Semi-hermetic and screw compressor specialist repairs." },
-      { slug: "danfoss", name: "Danfoss", desc: "Controls, compressors and valve repairs across all product lines." },
-      { slug: "daikin", name: "Daikin", desc: "Commercial refrigeration and air conditioning system servicing." },
-    ],
-  },
-  danfoss: {
-    name: "Danfoss",
-    tagline: "Danfoss Controls & Compressor Repairs",
-    heroDesc: "Expert servicing of Danfoss controls, valves, compressors and drives. From expansion valve replacements to controller programming and compressor diagnostics.",
-    stats: [
-      { value: "300+", label: "Danfoss Jobs/Year" },
-      { value: "98%", label: "First-Visit Fix" },
-      { value: "24/7", label: "Emergency Service" },
-      { value: "10yr", label: "Danfoss Experience" },
-    ],
-    about: "Danfoss is a global leader in refrigeration controls, valves and compressors. Their products — from electronic expansion valves and pressure controls to variable speed drives and controllers — are found in virtually every commercial refrigeration system. Faults in Danfoss controls can be complex to diagnose without specialist knowledge of their product ecosystem.",
-    commonIssues: [
-      { title: "Expansion Valve Failure", desc: "Electronic or thermostatic expansion valves failing to regulate correctly." },
-      { title: "Controller Faults", desc: "ERC or AK controller errors requiring programming or hardware replacement." },
-      { title: "Pressure Control Issues", desc: "High/low pressure switches and regulators failing or out of calibration." },
-      { title: "VSD/Drive Faults", desc: "Variable speed drive errors causing compressor performance issues." },
-      { title: "Solenoid Valve Failures", desc: "Stuck-open or stuck-closed solenoid valves disrupting system operation." },
-      { title: "Sensor Faults", desc: "Temperature and pressure sensor failures causing incorrect system responses." },
-    ],
-    services: [
-      "Expansion valve diagnostics and replacement",
-      "Controller programming and commissioning",
-      "Pressure control calibration and replacement",
-      "VSD fault diagnosis and repair",
-      "Solenoid valve testing and replacement",
-      "Sensor replacement and calibration",
-      "System optimisation and tuning",
-      "Preventative maintenance",
-      "Genuine Danfoss parts supply",
-      "Control system upgrades",
-    ],
-    productTypes: [
-      "Electronic Expansion Valves",
-      "Thermostatic Expansion Valves",
-      "Pressure Controls",
-      "Electronic Controllers",
-      "Variable Speed Drives",
-      "Solenoid Valves",
-      "Compressors",
-    ],
-    relatedBrands: [
-      { slug: "bitzer", name: "Bitzer", desc: "Semi-hermetic and screw compressor specialist repairs." },
-      { slug: "copeland", name: "Copeland", desc: "Scroll and semi-hermetic compressor repairs and servicing." },
-      { slug: "daikin", name: "Daikin", desc: "Commercial refrigeration and air conditioning system servicing." },
-    ],
-  },
-};
-
 const BrandPage = () => {
   const { brandSlug } = useParams<{ brandSlug: string }>();
-  const brand = brandsData[brandSlug || ""];
+  const brand = brandDetails[brandSlug || ""];
 
   if (!brand) {
     return (

@@ -1,0 +1,14 @@
+import type { Metadata } from "next";
+import PrivacyPolicy from "@/components/pages/PrivacyPolicy";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Acro Refrigeration – Brisbane Commercial Refrigeration",
+  description:
+    "Acro Refrigeration's Privacy Policy outlines how we collect, use, and protect your personal information in accordance with the Australian Privacy Act 1988. Serving Brisbane, Gold Coast & SE Queensland.",
+  alternates: { canonical: "https://acrorefrigeration.com.au/privacy" },
+  openGraph: { url: "https://acrorefrigeration.com.au/privacy" },
+};
+
+export default function PrivacyPolicyPage() {
+  return <PrivacyPolicy />;
+}

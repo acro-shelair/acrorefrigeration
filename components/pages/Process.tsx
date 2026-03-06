@@ -3,60 +3,10 @@
 import Layout from "@/components/Layout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  MessageSquare,
-  Search,
-  PenTool,
-  Hammer,
-  HardHat,
-  CheckCircle,
-  Phone,
-  Wrench,
-  Monitor,
-  FileText,
-} from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
-
-const steps = [
-  {
-    icon: Phone,
-    num: "01",
-    title: "You Call — 24/7",
-    desc: "Speak to a real technician on our 24/7 emergency hotline. No call centres, no waiting. We triage your issue immediately.",
-  },
-  {
-    icon: Search,
-    num: "02",
-    title: "We Dispatch & Diagnose",
-    desc: "The nearest qualified technician is dispatched within minutes. On-site fault diagnosis with full cost transparency before any work begins.",
-  },
-  {
-    icon: Wrench,
-    num: "03",
-    title: "Repair on First Visit",
-    desc: "We carry common parts and refrigerants on every truck. 98% of repairs are completed on the first visit — minimising your downtime.",
-  },
-  {
-    icon: CheckCircle,
-    num: "04",
-    title: "Test & Certify",
-    desc: "System tested to manufacturer specifications. Compliance documentation provided for HACCP and food safety audits.",
-  },
-  {
-    icon: Monitor,
-    num: "05",
-    title: "Monitor & Prevent",
-    desc: "Optional smart monitoring installed to track temperatures and system health — catching issues before they become breakdowns.",
-  },
-  {
-    icon: FileText,
-    num: "06",
-    title: "Ongoing Maintenance",
-    desc: "Move from reactive to proactive with a scheduled maintenance plan. Extend system life, cut energy costs and stay compliant year-round.",
-  },
-];
+import { processSteps, processPage } from "@/data/process";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -81,22 +31,21 @@ const Process = () => (
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4"
           >
-            Our Process
+            {processPage.badge}
           </motion.div>
           <motion.h1
             variants={fadeUp}
             className="text-4xl md:text-5xl font-extrabold mb-6"
           >
-            How We Deliver Your Project
+            {processPage.heading}
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-muted-foreground">
-            A transparent, structured process that keeps you informed at every
-            stage.
+            {processPage.subheading}
           </motion.p>
         </motion.div>
 
         <div className="space-y-6">
-          {steps.map((s, i) => (
+          {processSteps.map((s, i) => (
             <motion.div
               key={s.num}
               className="grid md:grid-cols-[80px_1fr] gap-6 items-start"
@@ -127,12 +76,10 @@ const Process = () => (
 
         <div className="mt-16 bg-secondary rounded-2xl p-8 md:p-12">
           <h2 className="text-2xl font-extrabold mb-4">
-            Need a New Cold Room?
+            {processPage.coldRoomNote.heading}
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-4">
-            For new cold room builds, our process includes consultation, site
-            inspection, engineering & design, fabrication, installation and
-            HACCP certification — typically 4–8 weeks from approval to handover.
+            {processPage.coldRoomNote.body}
           </p>
           <Button asChild>
             <Link href="/contact">
@@ -149,8 +96,8 @@ const Process = () => (
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <Button asChild size="lg" className="text-base px-8">
-            <a href="tel:1300227600">
-              <Phone className="w-4 h-4 mr-2" /> Call Now — 24/7{" "}
+            <a href={`tel:${processPage.phone}`}>
+              <Phone className="w-4 h-4 mr-2" /> {processPage.callCta}{" "}
               <ArrowRight className="w-4 h-4 ml-2" />
             </a>
           </Button>

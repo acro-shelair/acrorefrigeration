@@ -2,75 +2,11 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
-import {
-  UtensilsCrossed,
-  ShoppingCart,
-  Pill,
-  Warehouse,
-  Factory,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
-
-const industries = [
-  {
-    icon: UtensilsCrossed,
-    title: "Restaurants & Hospitality",
-    desc: "Walk-in coolrooms, freezer rooms, and bar refrigeration designed for the demands of commercial kitchens. HACCP-compliant systems that keep your kitchen inspection-ready.",
-    features: [
-      "Walk-in coolrooms",
-      "Blast chillers",
-      "Bar fridges",
-      "HACCP compliance",
-    ],
-  },
-  {
-    icon: ShoppingCart,
-    title: "Supermarkets & Retail",
-    desc: "Multi-temperature display cases, cold rooms, and energy-efficient refrigeration systems for retail environments. Maximise product visibility while minimising energy costs.",
-    features: [
-      "Display cases",
-      "Multi-temp zones",
-      "Night blinds",
-      "Energy management",
-    ],
-  },
-  {
-    icon: Pill,
-    title: "Pharmaceuticals & Healthcare",
-    desc: "Precision temperature-controlled storage for vaccines, medicines, and biological materials. Meets TGA and cold chain requirements with redundant monitoring systems.",
-    features: [
-      "Vaccine storage",
-      "TGA compliance",
-      "Redundant systems",
-      "Audit trails",
-    ],
-  },
-  {
-    icon: Warehouse,
-    title: "Warehousing & Logistics",
-    desc: "Large-scale cold storage solutions for distribution centres and logistics hubs. Designed for high-throughput operations with dock-level integration.",
-    features: [
-      "Dock integration",
-      "Pallet racking",
-      "Rapid cycling",
-      "Scale flexibility",
-    ],
-  },
-  {
-    icon: Factory,
-    title: "Food Production & Manufacturing",
-    desc: "Processing rooms, blast freezers, and production-line refrigeration for food manufacturers. Engineered for continuous operation and regulatory compliance.",
-    features: [
-      "Blast freezing",
-      "Processing rooms",
-      "Clean rooms",
-      "Continuous ops",
-    ],
-  },
-];
+import { industries, industriesPage } from "@/data/industries";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -109,17 +45,16 @@ const Industries = () => (
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4"
           >
-            Industries
+            {industriesPage.badge}
           </motion.div>
           <motion.h1
             variants={fadeUp}
             className="text-4xl md:text-5xl font-extrabold mb-6"
           >
-            Refrigeration Repair & Maintenance for Every Industry
+            {industriesPage.heading}
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-muted-foreground">
-            Specialist servicing, emergency repairs and maintenance plans
-            tailored to the unique demands of your sector.
+            {industriesPage.subheading}
           </motion.p>
         </motion.div>
 
@@ -141,7 +76,7 @@ const Industries = () => (
                 </div>
                 <h2 className="text-2xl font-extrabold mb-3">{ind.title}</h2>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  {ind.desc}
+                  {ind.desc ?? ind.shortDesc}
                 </p>
                 <Button asChild>
                   <Link href="/contact">

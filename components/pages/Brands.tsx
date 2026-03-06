@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Wrench, Phone } from "lucide-react";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
+import { featuredBrands, otherBrands, brandsPage } from "@/data/brands";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -20,43 +21,6 @@ const cardVariant: Variants = {
     transition: { duration: 0.5, ease: "easeOut", delay: i * 0.08 },
   }),
 };
-
-const featuredBrands = [
-  {
-    slug: "bitzer",
-    name: "Bitzer",
-    desc: "Semi-hermetic reciprocating and screw compressor repairs, overhauls and preventative maintenance.",
-    speciality: "Compressors",
-    detail: "One of the world's leading compressor manufacturers — trusted in cold rooms, supermarkets and industrial facilities across Australia.",
-  },
-  {
-    slug: "copeland",
-    name: "Copeland",
-    desc: "Scroll and semi-hermetic compressor diagnostics, replacement and efficiency optimisation.",
-    speciality: "Compressors",
-    detail: "Widely used scroll and semi-hermetic compressors found in everything from supermarket display cases to large cold rooms.",
-  },
-  {
-    slug: "danfoss",
-    name: "Danfoss",
-    desc: "Expansion valves, electronic controllers, pressure controls and variable speed drive repairs.",
-    speciality: "Controls & Valves",
-    detail: "Global leader in refrigeration controls, valves and drives found in virtually every commercial refrigeration system.",
-  },
-];
-
-const otherBrands = [
-  { name: "Daikin", category: "Refrigeration & HVAC" },
-  { name: "Carrier", category: "Refrigeration & HVAC" },
-  { name: "Heatcraft", category: "Refrigeration" },
-  { name: "Embraco", category: "Compressors" },
-  { name: "Tecumseh", category: "Compressors" },
-  { name: "Hussmann", category: "Display Cases" },
-  { name: "Reflex", category: "Controls" },
-  { name: "Kirloskar", category: "Compressors" },
-  { name: "Panasonic", category: "Refrigeration & HVAC" },
-  { name: "LG Commercial", category: "Refrigeration & HVAC" },
-];
 
 const Brands = () => (
   <Layout>
@@ -78,18 +42,16 @@ const Brands = () => (
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4"
           >
-            <Wrench className="w-3.5 h-3.5" /> Brand Specialists
+            <Wrench className="w-3.5 h-3.5" /> {brandsPage.badge}
           </motion.div>
           <motion.h1
             variants={fadeUp}
             className="text-4xl md:text-5xl font-extrabold mb-6"
           >
-            All Major Brands. One Expert Team.
+            {brandsPage.heading}
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-muted-foreground">
-            We service and repair every major commercial refrigeration brand —
-            from compressor overhauls to control system diagnostics. If it's
-            refrigeration, we know it.
+            {brandsPage.subheading}
           </motion.p>
         </motion.div>
 
@@ -102,14 +64,14 @@ const Brands = () => (
         >
           <div>
             <h2 className="text-xl md:text-2xl font-extrabold text-primary-foreground mb-1">
-              Brand Equipment Failure?
+              {brandsPage.emergencyBanner.heading}
             </h2>
             <p className="text-primary-foreground/80 text-sm">
-              Call now — average 2-hour response, 24/7 across Brisbane & SE Queensland.
+              {brandsPage.emergencyBanner.subheading}
             </p>
           </div>
           <Button asChild size="lg" variant="secondary" className="shrink-0">
-            <a href="tel:1300227600">
+            <a href={`tel:${brandsPage.emergencyBanner.phone}`}>
               <Phone className="w-4 h-4 mr-2" /> 1300 227 600
             </a>
           </Button>
@@ -123,9 +85,9 @@ const Brands = () => (
           viewport={{ once: true }}
           className="mb-4"
         >
-          <h2 className="text-2xl font-extrabold mb-2">Featured Brand Specialists</h2>
+          <h2 className="text-2xl font-extrabold mb-2">{brandsPage.featuredHeading}</h2>
           <p className="text-muted-foreground mb-10">
-            Deep expertise in these brands with dedicated service pages, parts supply and specialist technicians.
+            {brandsPage.featuredSubheading}
           </p>
         </motion.div>
 
@@ -182,11 +144,10 @@ const Brands = () => (
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-            Also Servicing These Brands
+            {brandsPage.otherBrandsHeading}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Our technicians are trained across the full range of commercial refrigeration
-            equipment — whatever brand you run, we can help.
+            {brandsPage.otherBrandsSubheading}
           </p>
         </motion.div>
 
@@ -218,10 +179,9 @@ const Brands = () => (
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-extrabold mb-3">Don't See Your Brand?</h3>
+          <h3 className="text-2xl font-extrabold mb-3">{brandsPage.notListedHeading}</h3>
           <p className="text-muted-foreground leading-relaxed mb-6 max-w-xl mx-auto">
-            We service and repair virtually all commercial refrigeration brands. If you don't
-            see your equipment listed, get in touch — chances are we've worked on it before.
+            {brandsPage.notListedDesc}
           </p>
           <Button asChild size="lg">
             <Link href="/contact">

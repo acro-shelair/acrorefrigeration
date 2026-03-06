@@ -7,52 +7,7 @@ import { ArrowRight, Check } from "lucide-react";
 import CTABanner from "@/components/home/CTABanner";
 import FAQSection from "@/components/home/FAQSection";
 import { motion, Variants } from "framer-motion";
-
-const tiers = [
-  {
-    name: "Emergency Call-Out",
-    desc: "For one-off breakdowns and urgent repairs.",
-    price: "From $220",
-    unit: "per call-out",
-    features: [
-      "24/7 availability",
-      "2hr avg response",
-      "On-site diagnosis",
-      "Most repairs same visit",
-      "Compliance documentation",
-      "All brands serviced",
-    ],
-  },
-  {
-    name: "Maintenance Plan",
-    desc: "Scheduled servicing to prevent breakdowns.",
-    price: "From $450",
-    unit: "per month",
-    features: [
-      "Quarterly servicing visits",
-      "Priority emergency response",
-      "Filter & component checks",
-      "Refrigerant monitoring",
-      "Energy efficiency reports",
-      "24/7 smart monitoring",
-    ],
-    popular: true,
-  },
-  {
-    name: "Cold Room Build",
-    desc: "Custom cold room design, fabrication & install.",
-    price: "From $15,000",
-    unit: "project",
-    features: [
-      "Custom engineering",
-      "HACCP compliance",
-      "High-density insulation",
-      "Smart monitoring included",
-      "Up to 5yr warranty",
-      "Maintenance plan option",
-    ],
-  },
-];
+import { pricingTiers, pricingPage } from "@/data/pricing";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -87,22 +42,21 @@ const Pricing = () => (
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4"
           >
-            Pricing
+            {pricingPage.badge}
           </motion.div>
           <motion.h1
             variants={fadeUp}
             className="text-4xl md:text-5xl font-extrabold mb-6"
           >
-            Transparent Pricing
+            {pricingPage.heading}
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-muted-foreground">
-            Every project is unique. These guides give you a starting point —
-            get a custom quote for accurate pricing.
+            {pricingPage.subheading}
           </motion.p>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {tiers.map((t, i) => (
+          {pricingTiers.map((t, i) => (
             <motion.div
               key={t.name}
               custom={i}

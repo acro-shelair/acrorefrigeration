@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cities } from "@/data/locations";
+import { locationsSection } from "@/data/home";
 import { motion, Variants } from "framer-motion";
 
 const fadeUp: Variants = {
@@ -31,14 +32,13 @@ const LocationsSection = () => (
         viewport={{ once: true }}
       >
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
-          <MapPin className="w-3.5 h-3.5" /> Service Areas
+          <MapPin className="w-3.5 h-3.5" /> {locationsSection.badge}
         </div>
         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-          Commercial Refrigeration Repairs Near You
+          {locationsSection.heading}
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          24/7 emergency repairs and maintenance across South-East Queensland.
-          Find your local team.
+          {locationsSection.subheading}
         </p>
       </motion.div>
 
@@ -94,7 +94,7 @@ const LocationsSection = () => (
           href="/locations"
           className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
         >
-          View all service areas <ArrowRight className="w-4 h-4" />
+          {locationsSection.viewAllLabel} <ArrowRight className="w-4 h-4" />
         </Link>
       </motion.div>
     </div>

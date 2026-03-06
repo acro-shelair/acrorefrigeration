@@ -4,38 +4,9 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import { useEffect, useState } from "react";
 
-const steps = [
-  {
-    num: "1",
-    title: "You Call",
-    desc: "24/7 hotline — speak to a real technician, not a call centre.",
-  },
-  {
-    num: "2",
-    title: "We Dispatch",
-    desc: "Nearest qualified tech dispatched within minutes.",
-  },
-  {
-    num: "3",
-    title: "Diagnose",
-    desc: "On-site fault diagnosis with full transparency on costs.",
-  },
-  {
-    num: "4",
-    title: "Repair",
-    desc: "Fix completed on first visit 98% of the time.",
-  },
-  {
-    num: "5",
-    title: "Test & Certify",
-    desc: "System tested to spec with compliance documentation.",
-  },
-  {
-    num: "6",
-    title: "Monitor",
-    desc: "Optional smart monitoring to prevent future breakdowns.",
-  },
-];
+import { processTimeline } from "@/data/home";
+
+const { steps } = processTimeline;
 
 const AnimatedStep = ({
   step,
@@ -90,11 +61,10 @@ const ProcessTimeline = () => (
     <div className="container-narrow">
       <ScrollReveal className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-          How Our Emergency Repair Process Works
+          {processTimeline.heading}
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          From your call to a fully operational system — fast, transparent, and
-          guaranteed.
+          {processTimeline.subheading}
         </p>
       </ScrollReveal>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">

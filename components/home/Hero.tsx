@@ -6,37 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-coldroom.jpg";
+import { hero } from "@/data/home";
 
-const floatingStats = [
-  {
-    value: "HACCP-Certified",
-    label: "HACCP Certified",
-    // Straddles the top-left corner — half outside the image
-    className: "absolute top-14 -right-10",
-    motionStyle: { translateY: "-50%" },
-    delay: 0.9,
-    pulseDelay: 0.9,
-  },
-  {
-    value: "50+",
-    label: "Years Experience",
-
-    // Straddles the right-middle edge — half outside the image
-    className: "absolute left-2",
-    motionStyle: { top: "50%", translateX: "-50%", translateY: "-50%" },
-    delay: 0.7,
-    pulseDelay: 0,
-  },
-  {
-    value: "24/7 Support",
-    label: "Emergency Response",
-    // Straddles the bottom-right corner — half outside the image
-    className: "absolute bottom-16 -right-10",
-    motionStyle: { translateY: "50%" },
-    delay: 1.1,
-    pulseDelay: 1.8,
-  },
-];
+const { floatingStats } = hero;
 
 const containerVariants = {
   hidden: {},
@@ -70,25 +42,23 @@ const Hero = () => {
               variants={itemVariants}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-6 cursor-default"
             >
-              Australia's Trusted Refrigeration Experts
+              {hero.badge}
             </motion.div>
 
             <motion.h1
               variants={itemVariants}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] mb-6"
             >
-              Commercial Refrigeration
-              <span className="text-primary"> Repair & Maintenance</span>:
-              Keeping Your Cold Chain Unbroken 24/7
+              {hero.heading}
+              <span className="text-primary">{hero.headingHighlight}</span>
+              {hero.headingEnd}
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
               className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-md"
             >
-              Breakdowns don't wait — neither do we. Fast emergency repairs,
-              preventative maintenance plans, and expert servicing for all
-              commercial refrigeration systems.
+              {hero.subheading}
             </motion.p>
 
             <motion.div
@@ -100,8 +70,8 @@ const Hero = () => {
                 size="lg"
                 className="text-base px-8 w-full sm:w-auto"
               >
-                <Link href="/contact">
-                  Get a Quote <ArrowRight className="w-4 h-4 ml-2" />
+                <Link href={hero.primaryCta.href}>
+                  {hero.primaryCta.label} <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
               <Button
@@ -110,8 +80,8 @@ const Hero = () => {
                 size="lg"
                 className="text-base px-8 w-full sm:w-auto"
               >
-                <Link href="/contact">
-                  <Calendar className="w-4 h-4 mr-2" /> Book Site Inspection
+                <Link href={hero.secondaryCta.href}>
+                  <Calendar className="w-4 h-4 mr-2" /> {hero.secondaryCta.label}
                 </Link>
               </Button>
             </motion.div>

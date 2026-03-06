@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { motion, Variants } from "framer-motion";
+import { contactPage, contactDetails, serviceOptions } from "@/data/contact";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -41,15 +42,15 @@ const Contact = () => (
         >
           <div>
             <h2 className="text-xl md:text-2xl font-extrabold text-primary-foreground mb-1">
-              Need Emergency Repair?
+              {contactPage.emergencyBanner.heading}
             </h2>
             <p className="text-primary-foreground/80 text-sm">
-              Skip the form — call now for 24/7 priority dispatch.
+              {contactPage.emergencyBanner.subheading}
             </p>
           </div>
           <Button asChild size="lg" variant="secondary" className="shrink-0">
-            <a href="tel:1300000000">
-              <Phone className="w-4 h-4 mr-2" /> 1300 227 600
+            <a href={`tel:${contactDetails.phone}`}>
+              <Phone className="w-4 h-4 mr-2" /> {contactDetails.phoneDisplay}
             </a>
           </Button>
         </motion.div>
@@ -60,20 +61,19 @@ const Contact = () => (
               variants={fadeUp}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4"
             >
-              Contact Us
+              {contactPage.badge}
             </motion.div>
             <motion.h1
               variants={fadeUp}
               className="text-4xl md:text-5xl font-extrabold mb-6"
             >
-              Get a Service or Build Quote
+              {contactPage.heading}
             </motion.h1>
             <motion.p
               variants={fadeUp}
               className="text-lg text-muted-foreground mb-10"
             >
-              Whether you need emergency repairs, a maintenance plan, or a new
-              cold room — we'll get back to you within 2 business hours.
+              {contactPage.subheading}
             </motion.p>
 
             <motion.div variants={stagger} className="space-y-6">
@@ -87,10 +87,10 @@ const Contact = () => (
                 <div>
                   <div className="font-semibold mb-1">24/7 Emergency Line</div>
                   <a
-                    href="tel:1300000000"
+                    href={`tel:${contactDetails.phone}`}
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    1300 227 600
+                    {contactDetails.phoneDisplay}
                   </a>
                 </div>
               </motion.div>
@@ -104,10 +104,10 @@ const Contact = () => (
                 <div>
                   <div className="font-semibold mb-1">Email</div>
                   <a
-                    href="mailto:info@acrorefrigeration.com.au"
+                    href={`mailto:${contactDetails.email}`}
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    info@acrorefrigeration.com.au
+                    {contactDetails.email}
                   </a>
                 </div>
               </motion.div>
@@ -121,7 +121,7 @@ const Contact = () => (
                 <div>
                   <div className="font-semibold mb-1">Location</div>
                   <p className="text-muted-foreground">
-                    Brisbane, SE Queensland
+                    {contactDetails.location}
                   </p>
                 </div>
               </motion.div>
@@ -135,10 +135,10 @@ const Contact = () => (
                 <div>
                   <div className="font-semibold mb-1">Business Hours</div>
                   <p className="text-muted-foreground">
-                    Mon–Fri: 7am – 5pm AEST
+                    {contactDetails.hours}
                   </p>
                   <p className="text-sm text-primary font-semibold">
-                    24/7 Emergency Service Available
+                    {contactDetails.emergency}
                   </p>
                 </div>
               </motion.div>
@@ -151,7 +151,7 @@ const Contact = () => (
             animate="visible"
             className="bg-card rounded-2xl p-8 border border-border shadow-sm"
           >
-            <h2 className="text-xl font-bold mb-6">Request a Quote</h2>
+            <h2 className="text-xl font-bold mb-6">{contactPage.formHeading}</h2>
             <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -184,12 +184,9 @@ const Contact = () => (
                   Service Required
                 </label>
                 <select className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm">
-                  <option>Emergency Repair</option>
-                  <option>Maintenance Plan</option>
-                  <option>System Upgrade</option>
-                  <option>New Cold Room Build</option>
-                  <option>Smart Monitoring</option>
-                  <option>Other</option>
+                  {serviceOptions.map((opt) => (
+                    <option key={opt}>{opt}</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -205,7 +202,7 @@ const Contact = () => (
                 Submit Enquiry
               </Button>
               <p className="text-xs text-muted-foreground text-center">
-                We'll respond within 2 business hours. No spam, ever.
+                {contactPage.formFootnote}
               </p>
             </form>
           </motion.div>

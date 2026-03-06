@@ -18,31 +18,7 @@ const cardVariant: Variants = {
   }),
 };
 
-const brands = [
-  {
-    slug: "bitzer",
-    name: "Bitzer",
-    desc: "Semi-hermetic reciprocating and screw compressor repairs, overhauls and preventative maintenance.",
-    speciality: "Compressors",
-  },
-  {
-    slug: "copeland",
-    name: "Copeland",
-    desc: "Scroll and semi-hermetic compressor diagnostics, replacement and efficiency optimisation.",
-    speciality: "Compressors",
-  },
-  {
-    slug: "danfoss",
-    name: "Danfoss",
-    desc: "Expansion valves, electronic controllers, pressure controls and variable speed drive repairs.",
-    speciality: "Controls & Valves",
-  },
-];
-
-const otherBrands = [
-  "Daikin", "Carrier", "Heatcraft", "Embraco", "Tecumseh",
-  "Hussmann", "Reflex", "Kirloskar", "Panasonic", "LG Commercial",
-];
+import { featuredBrands, otherBrandNames, brandsHomeSection } from "@/data/brands";
 
 const BrandsSection = () => (
   <section className="section-padding bg-background">
@@ -55,20 +31,19 @@ const BrandsSection = () => (
         viewport={{ once: true }}
       >
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
-          <Wrench className="w-3.5 h-3.5" /> Brand Specialists
+          <Wrench className="w-3.5 h-3.5" /> {brandsHomeSection.badge}
         </div>
         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-          All Major Brands. One Expert Team.
+          {brandsHomeSection.heading}
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          We service and repair every major commercial refrigeration brand —
-          from compressor overhauls to control system diagnostics.
+          {brandsHomeSection.subheading}
         </p>
       </motion.div>
 
       {/* Featured brand cards */}
       <div className="grid md:grid-cols-3 gap-6 mb-10">
-        {brands.map((brand, i) => (
+        {featuredBrands.map((brand, i) => (
           <motion.div
             key={brand.slug}
             custom={i}
@@ -116,7 +91,7 @@ const BrandsSection = () => (
           Also Servicing
         </p>
         <div className="flex flex-wrap justify-center gap-2">
-          {otherBrands.map((brand) => (
+          {otherBrandNames.map((brand) => (
             <span
               key={brand}
               className="px-3 py-1.5 bg-background border border-border rounded-full text-sm font-medium text-muted-foreground"

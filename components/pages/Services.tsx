@@ -3,96 +3,12 @@
 import Layout from "@/components/Layout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  Snowflake,
-  Wrench,
-  ShieldCheck,
-  Thermometer,
-  Clock,
-  BarChart3,
-  Phone,
-  Search,
-  Monitor,
-  FileText,
-  CheckCircle,
-} from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
 import CTABanner from "@/components/home/CTABanner";
 import FAQSection from "@/components/home/FAQSection";
 import equipmentImg from "@/assets/equipment.jpg";
 import { motion, Variants } from "framer-motion";
-
-const services = [
-  {
-    icon: Clock,
-    title: "24/7 Emergency Repairs",
-    desc: "Round-the-clock emergency breakdown service with rapid response times across Brisbane, Gold Coast and SE Queensland.",
-  },
-  {
-    icon: Wrench,
-    title: "Preventative Maintenance",
-    desc: "Scheduled maintenance plans that catch issues before they become costly breakdowns. Extend system life, cut energy costs and stay compliant.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Compliance & Certification",
-    desc: "Post-repair compliance checks, HACCP documentation and temperature logging for food safety and pharmaceutical audits.",
-  },
-  {
-    icon: Thermometer,
-    title: "Smart Monitoring",
-    desc: "IoT-enabled temperature monitoring with cloud dashboards, automated alerts and compliance logging.",
-  },
-  {
-    icon: BarChart3,
-    title: "Energy Audits & Upgrades",
-    desc: "Comprehensive energy efficiency assessments and system upgrades that reduce running costs by up to 30% on ageing systems.",
-  },
-  {
-    icon: Snowflake,
-    title: "Cold Room Construction",
-    desc: "When you need new capacity, our in-house team designs, fabricates and installs custom HACCP-compliant cold rooms built to last.",
-  },
-];
-
-const steps = [
-  {
-    icon: Phone,
-    num: "01",
-    title: "You Call — 24/7",
-    desc: "Speak to a real technician on our 24/7 emergency hotline. No call centres, no waiting. We triage your issue immediately.",
-  },
-  {
-    icon: Search,
-    num: "02",
-    title: "We Dispatch & Diagnose",
-    desc: "The nearest qualified technician is dispatched within minutes. On-site fault diagnosis with full cost transparency before any work begins.",
-  },
-  {
-    icon: Wrench,
-    num: "03",
-    title: "Repair on First Visit",
-    desc: "We carry common parts and refrigerants on every truck. 98% of repairs are completed on the first visit — minimising your downtime.",
-  },
-  {
-    icon: CheckCircle,
-    num: "04",
-    title: "Test & Certify",
-    desc: "System tested to manufacturer specifications. Compliance documentation provided for HACCP and food safety audits.",
-  },
-  {
-    icon: Monitor,
-    num: "05",
-    title: "Monitor & Prevent",
-    desc: "Optional smart monitoring installed to track temperatures and system health — catching issues before they become breakdowns.",
-  },
-  {
-    icon: FileText,
-    num: "06",
-    title: "Ongoing Maintenance",
-    desc: "Move from reactive to proactive with a scheduled maintenance plan. Extend system life, cut energy costs and stay compliant year-round.",
-  },
-];
+import { services, serviceSteps, servicesPage } from "@/data/services";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -128,17 +44,16 @@ const Services = () => (
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4"
           >
-            Our Services
+            {servicesPage.badge}
           </motion.div>
           <motion.h1
             variants={fadeUp}
             className="text-4xl md:text-5xl font-extrabold mb-6"
           >
-            Repairs, Maintenance & Cold Room Solutions
+            {servicesPage.heading}
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-muted-foreground">
-            From 2am breakdowns to scheduled servicing and new cold room builds
-            — one expert team for every commercial refrigeration need.
+            {servicesPage.subheading}
           </motion.p>
         </motion.div>
 
@@ -151,14 +66,14 @@ const Services = () => (
         >
           <div>
             <h2 className="text-xl md:text-2xl font-extrabold text-primary-foreground mb-1">
-              Refrigeration Emergency?
+              {servicesPage.emergencyBanner.heading}
             </h2>
             <p className="text-primary-foreground/80 text-sm">
-              Call now for priority dispatch — average 2-hour response, 24/7.
+              {servicesPage.emergencyBanner.subheading}
             </p>
           </div>
           <Button asChild size="lg" variant="secondary" className="shrink-0">
-            <a href="tel:1300227600">
+            <a href={`tel:${servicesPage.emergencyBanner.phone}`}>
               <Phone className="w-4 h-4 mr-2" /> 1300 227 600
             </a>
           </Button>
@@ -204,18 +119,13 @@ const Services = () => (
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <h2 className="text-3xl font-extrabold mb-4">
-              All Brands. All Systems. One Team.
+              {servicesPage.allBrandsSection.heading}
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              We service and repair all major commercial refrigeration brands —
-              Bitzer, Copeland, Danfoss, Daikin and more. Whether it's a
-              compressor failure, refrigerant leak or control system fault,
-              we've seen it and fixed it.
+              {servicesPage.allBrandsSection.body1}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              When you need new cold storage capacity, we also design, fabricate
-              and install custom cold rooms with high-density polyurethane
-              insulation and food-grade stainless steel finishes.
+              {servicesPage.allBrandsSection.body2}
             </p>
           </motion.div>
           <motion.div
@@ -246,18 +156,18 @@ const Services = () => (
           viewport={{ once: true }}
         >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
-            Our Process
+            {servicesPage.processSection.badge}
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-            How We Deliver Your Project
+            {servicesPage.processSection.heading}
           </h2>
           <p className="text-lg text-muted-foreground">
-            A transparent, structured process that keeps you informed at every stage.
+            {servicesPage.processSection.subheading}
           </p>
         </motion.div>
 
         <div className="space-y-6">
-          {steps.map((s, i) => (
+          {serviceSteps.map((s, i) => (
             <motion.div
               key={s.num}
               className="grid md:grid-cols-[80px_1fr] gap-6 items-start"
@@ -291,11 +201,9 @@ const Services = () => (
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-extrabold mb-4">Need a New Cold Room?</h3>
+          <h3 className="text-2xl font-extrabold mb-4">{servicesPage.processSection.coldRoomNote.heading}</h3>
           <p className="text-muted-foreground leading-relaxed mb-6">
-            For new cold room builds, our process includes consultation, site inspection,
-            engineering & design, fabrication, installation and HACCP certification —
-            typically 4–8 weeks from approval to handover.
+            {servicesPage.processSection.coldRoomNote.body}
           </p>
           <Button asChild>
             <Link href="/contact">

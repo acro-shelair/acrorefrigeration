@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import ScrollReveal from "@/components/ScrollReveal";
+import { clientsSection } from "@/data/home";
 
 import brisbanClub from "@/assets/clients/brisbane-club.png";
 import marriott from "@/assets/clients/client-marriot.png";
@@ -28,10 +29,10 @@ const ClientsSection = () => (
     <div className="container-narrow">
       <ScrollReveal className="text-center mb-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">
-          Trusted By
+          {clientsSection.eyebrow}
         </p>
         <h2 className="text-2xl md:text-3xl font-extrabold">
-          Proudly Serving Queensland's Best
+          {clientsSection.heading}
         </h2>
       </ScrollReveal>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 items-center">
