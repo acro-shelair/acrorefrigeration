@@ -209,12 +209,36 @@ export const processTimeline = {
   subheading:
     "From your call to a fully operational system — fast, transparent, and guaranteed.",
   steps: [
-    { num: "1", title: "You Call", desc: "24/7 hotline — speak to a real technician, not a call centre." },
-    { num: "2", title: "We Dispatch", desc: "Nearest qualified tech dispatched within minutes." },
-    { num: "3", title: "Diagnose", desc: "On-site fault diagnosis with full transparency on costs." },
-    { num: "4", title: "Repair", desc: "Fix completed on first visit 98% of the time." },
-    { num: "5", title: "Test & Certify", desc: "System tested to spec with compliance documentation." },
-    { num: "6", title: "Monitor", desc: "Optional smart monitoring to prevent future breakdowns." },
+    {
+      num: "1",
+      title: "You Call",
+      desc: "24/7 hotline — speak to a real technician, not a call centre.",
+    },
+    {
+      num: "2",
+      title: "We Dispatch",
+      desc: "Nearest qualified tech dispatched within minutes.",
+    },
+    {
+      num: "3",
+      title: "Diagnose",
+      desc: "On-site fault diagnosis with full transparency on costs.",
+    },
+    {
+      num: "4",
+      title: "Repair",
+      desc: "Fix completed on first visit 98% of the time.",
+    },
+    {
+      num: "5",
+      title: "Test & Certify",
+      desc: "System tested to spec with compliance documentation.",
+    },
+    {
+      num: "6",
+      title: "Monitor",
+      desc: "Optional smart monitoring to prevent future breakdowns.",
+    },
   ] as ProcessTimelineStep[],
 };
 

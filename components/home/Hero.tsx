@@ -8,7 +8,46 @@ import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-coldroom.jpg";
 import { hero } from "@/data/home";
 
-const { floatingStats } = hero;
+function StatCard({
+  value,
+  label,
+  delay,
+  pulseDelay,
+  className,
+}: {
+  value: string;
+  label: string;
+  delay: number;
+  pulseDelay: number;
+  className: string;
+}) {
+  return (
+    <motion.div
+      className={`${className} z-10`}
+      initial={{ opacity: 0, scale: 0.75 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, delay, ease: "backOut" }}
+    >
+      <motion.div
+        className="bg-background/90 backdrop-blur-md rounded-xl border border-border px-4 py-3 shadow-lg text-center min-w-[130px]"
+        animate={{ y: [0, -8, 0] }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: pulseDelay,
+        }}
+      >
+        <span className="block text-xl font-extrabold text-primary leading-tight">
+          {value}
+        </span>
+        <span className="text-xs text-muted-foreground font-medium mt-0.5 block whitespace-nowrap">
+          {label}
+        </span>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 const containerVariants = {
   hidden: {},
@@ -71,7 +110,8 @@ const Hero = () => {
                 className="text-base px-8 w-full sm:w-auto"
               >
                 <Link href={hero.primaryCta.href}>
-                  {hero.primaryCta.label} <ArrowRight className="w-4 h-4 ml-2" />
+                  {hero.primaryCta.label}{" "}
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
               <Button
@@ -81,7 +121,8 @@ const Hero = () => {
                 className="text-base px-8 w-full sm:w-auto"
               >
                 <Link href={hero.secondaryCta.href}>
-                  <Calendar className="w-4 h-4 mr-2" /> {hero.secondaryCta.label}
+                  <Calendar className="w-4 h-4 mr-2" />{" "}
+                  {hero.secondaryCta.label}
                 </Link>
               </Button>
             </motion.div>
@@ -89,7 +130,7 @@ const Hero = () => {
 
           {/* Right column — image + floating stat cards */}
           <motion.div
-            className="relative pt-4 pb-6 lg:pt-8 lg:pb-10 lg:pr-16"
+            className="relative hidden lg:block"
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{
@@ -98,53 +139,65 @@ const Hero = () => {
               ease: [0.25, 0.1, 0.25, 1],
             }}
           >
-            <div className="rounded-2xl overflow-hidden shadow-2xl shadow-foreground/5">
-              <div className="relative w-full h-[240px] sm:h-[320px] lg:h-[500px]">
+            {/* Image */}
+            <div className="rounded-2xl overflow-hidden shadow-2xl shadow-foreground/5 mx-8">
+              <div className="relative w-full h-[500px]">
                 <Image
                   src={heroImg}
                   alt="Commercial cold room installation by Acro Refrigeration"
                   fill
                   className="object-cover"
                   priority
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
+                  sizes="50vw"
                 />
               </div>
             </div>
 
-            {floatingStats.map((stat) => (
-              // Outer: handles absolute positioning + entrance animation
-              <motion.div
-                key={stat.label}
-                className={`hidden lg:block ${stat.className} z-10`}
-                style={stat.motionStyle}
-                initial={{ opacity: 0, scale: 0.75 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.5,
-                  delay: stat.delay,
-                  ease: "backOut",
-                }}
-              >
-                {/* Inner: continuous up/down float, staggered per card */}
-                <motion.div
-                  className="bg-background/85 backdrop-blur-md rounded-xl border border-border px-4 py-3 shadow-elevated text-center min-w-[110px]"
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: stat.pulseDelay,
-                  }}
-                >
-                  <span className="block text-2xl font-extrabold text-primary">
-                    {stat.value}
-                  </span>
-                  <span className="text-xs text-muted-foreground font-medium mt-0.5 block whitespace-nowrap">
-                    {stat.label}
-                  </span>
-                </motion.div>
-              </motion.div>
-            ))}
+            {/* Stat card — left center */}
+            <StatCard
+              value="50+"
+              label="Years Experience"
+              delay={0.7}
+              pulseDelay={0}
+              className="absolute left-0 top-1/2 -translate-y-1/2"
+            />
+
+            {/* Stat card — top right */}
+            <StatCard
+              value="HACCP-Certified"
+              label="HACCP Certified"
+              delay={0.9}
+              pulseDelay={0.9}
+              className="absolute right-0 top-12"
+            />
+
+            {/* Stat card — bottom right */}
+            <StatCard
+              value="24/7 Support"
+              label="Emergency Response"
+              delay={1.1}
+              pulseDelay={1.8}
+              className="absolute right-0 bottom-12"
+            />
+          </motion.div>
+
+          {/* Mobile image — no stats */}
+          <motion.div
+            className="lg:hidden rounded-2xl overflow-hidden shadow-2xl shadow-foreground/5"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            <div className="relative w-full h-[240px] sm:h-[320px]">
+              <Image
+                src={heroImg}
+                alt="Commercial cold room installation by Acro Refrigeration"
+                fill
+                className="object-cover"
+                priority
+                sizes="100vw"
+              />
+            </div>
           </motion.div>
         </div>
       </div>

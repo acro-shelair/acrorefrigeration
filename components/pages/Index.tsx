@@ -17,9 +17,7 @@ const LocationsSection = dynamic(() => import("@/components/home/LocationsSectio
 const CTABanner = dynamic(() => import("@/components/home/CTABanner"));
 const FAQSection = dynamic(() => import("@/components/home/FAQSection"));
 
-import type { Testimonial } from "@/lib/supabase/content";
-
-const Index = ({ testimonials }: { testimonials: Testimonial[] }) => (
+const Index = () => (
   <Layout>
     <Hero />
     <TrustBar />
@@ -29,7 +27,7 @@ const Index = ({ testimonials }: { testimonials: Testimonial[] }) => (
     <ProcessTimeline />
     <IndustryCards />
     <BrandsSection />
-    <Testimonials testimonials={testimonials} />
+    <Testimonials />
     <ClientsSection />
     <LocationsSection />
     <CTABanner />

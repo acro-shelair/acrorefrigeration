@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
 import Index from "@/components/pages/Index";
-import { createStaticClient } from "@/lib/supabase/static";
-import { getAllTestimonials } from "@/lib/supabase/content";
-
-export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Repair & Maintenance Brisbane",
@@ -37,17 +33,14 @@ const localBusinessSchema = {
   priceRange: "$$",
 };
 
-export default async function Home() {
-  const supabase = createStaticClient();
-  const testimonials = await getAllTestimonials(supabase);
-
+export default function Home() {
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
-      <Index testimonials={testimonials} />
+      <Index />
     </>
   );
 }

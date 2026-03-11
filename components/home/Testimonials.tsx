@@ -1,11 +1,20 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import { createClient } from "@/lib/supabase/client";
 import type { Testimonial } from "@/lib/supabase/content";
 import { testimonialsSection } from "@/data/home";
 
-const Testimonials = ({ testimonials }: { testimonials: Testimonial[] }) => {
+const Testimonials = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    createClient().from("testimonials").select("*").order("position")
+      .then(({ data }) => { if (data?.length) setTestimonials(data); });
+  }, []);
+
   const items = testimonials.length > 0
     ? testimonials
     : testimonialsSection.testimonials.map((t, i) => ({ id: String(i), ...t, rating: 5, position: i }));

@@ -7,18 +7,21 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { useState } from "react";
+import { LoadingProvider } from "@/lib/loading-context";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
       <LazyMotion features={domAnimation}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <Analytics />
-          {children}
-        </TooltipProvider>
+        <LoadingProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Analytics />
+            {children}
+          </TooltipProvider>
+        </LoadingProvider>
       </LazyMotion>
     </QueryClientProvider>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,7 +18,6 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -39,9 +37,10 @@ export default function LoginPage() {
       setError("Invalid email or password.");
       return;
     }
-    await logActivity("login", "auth", `Logged in: ${data.email}`, undefined, data.email);
-    router.push("/admin/posts");
-    router.refresh();
+    // Fire-and-forget — don't block the redirect on the log write
+    logActivity("login", "auth", `Logged in: ${data.email}`, undefined, data.email).catch(() => {});
+    // Hard redirect — ensures auth cookies are fully set before the new page loads
+    window.location.href = "/admin/posts";
   };
 
   return (

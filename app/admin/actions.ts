@@ -7,8 +7,8 @@ export async function signOutAction() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Log before signing out while session is still valid
-  await logActivity("logout", "auth", `Logged out: ${user?.email ?? "unknown"}`);
+  // Fire-and-forget log — don't block sign-out
+  logActivity("logout", "auth", `Logged out: ${user?.email ?? "unknown"}`).catch(() => {});
 
   await supabase.auth.signOut();
 }
