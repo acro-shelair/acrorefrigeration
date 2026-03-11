@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { getPublishedPosts } from "@/lib/supabase/posts";
 import Resources from "@/components/pages/Resources";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Guides, Articles & Resources",
@@ -9,6 +13,8 @@ export const metadata: Metadata = {
   openGraph: { url: "https://acrorefrigeration.com.au/resources" },
 };
 
-export default function ResourcesPage() {
-  return <Resources />;
+export default async function ResourcesPage() {
+  const supabase = await createClient();
+  const posts = await getPublishedPosts(supabase);
+  return <Resources posts={posts} />;
 }

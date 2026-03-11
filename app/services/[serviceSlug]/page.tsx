@@ -1,21 +1,29 @@
 import type { Metadata } from "next";
-import ServicePage from "@/components/pages/ServicePage";
 import { notFound } from "next/navigation";
-import { servicesData } from "@/lib/seo/services";
+import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
+import { getServiceBySlug, getPublishedServiceSlugs } from "@/lib/supabase/content";
+import ServicePage from "@/components/pages/ServicePage";
+
+export const revalidate = 300;
+export const dynamicParams = true;
 
 type Props = { params: Promise<{ serviceSlug: string }> };
 
-export function generateStaticParams() {
-  return Object.keys(servicesData).map((slug) => ({ serviceSlug: slug }));
+export async function generateStaticParams() {
+  const supabase = createStaticClient();
+  const slugs = await getPublishedServiceSlugs(supabase);
+  return slugs.map((slug) => ({ serviceSlug: slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { serviceSlug } = await params;
-  const service = servicesData[serviceSlug];
+  const supabase = await createClient();
+  const service = await getServiceBySlug(supabase, serviceSlug);
   if (!service) return {};
   return {
     title: service.title,
-    description: service.description,
+    description: service.meta_description || service.description,
     alternates: { canonical: `https://acrorefrigeration.com.au/services/${serviceSlug}` },
     openGraph: { url: `https://acrorefrigeration.com.au/services/${serviceSlug}` },
   };
@@ -23,13 +31,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServicePageRoute({ params }: Props) {
   const { serviceSlug } = await params;
-  const service = servicesData[serviceSlug];
+  const supabase = await createClient();
+  const service = await getServiceBySlug(supabase, serviceSlug);
   if (!service) notFound();
+
+  // Fetch related services
+  const relatedServices =
+    service.related_service_slugs?.length > 0
+      ? (await supabase
+          .from("services")
+          .select("slug, title, description")
+          .in("slug", service.related_service_slugs)
+        ).data ?? []
+      : [];
 
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: service.faqs.map((faq) => ({
+    mainEntity: service.faqs?.map((faq) => ({
       "@type": "Question",
       name: faq.q,
       acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -50,7 +69,7 @@ export default async function ServicePageRoute({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <ServicePage />
+      <ServicePage service={service} relatedServices={relatedServices} />
     </>
   );
 }

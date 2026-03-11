@@ -1,36 +1,61 @@
 import type { Metadata } from "next";
-import ResourcePage from "@/components/pages/ResourcePage";
 import { notFound } from "next/navigation";
-import { resourcesData } from "@/lib/seo/resources";
+import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
+import { getPublishedPosts, getPostBySlug } from "@/lib/supabase/posts";
+import ResourcePage from "@/components/pages/ResourcePage";
+
+export const revalidate = 300;
+export const dynamicParams = true;
 
 type Props = { params: Promise<{ resourceSlug: string }> };
 
-export function generateStaticParams() {
-  return Object.keys(resourcesData).map((slug) => ({ resourceSlug: slug }));
+export async function generateStaticParams() {
+  const supabase = createStaticClient();
+  const posts = await getPublishedPosts(supabase);
+  return posts.map((p) => ({ resourceSlug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { resourceSlug } = await params;
-  const resource = resourcesData[resourceSlug];
-  if (!resource) return {};
+  const supabase = await createClient();
+  const post = await getPostBySlug(supabase, resourceSlug);
+  if (!post) return {};
   return {
-    title: resource.title,
-    description: resource.description,
-    alternates: { canonical: `https://acrorefrigeration.com.au/resources/${resourceSlug}` },
-    openGraph: { url: `https://acrorefrigeration.com.au/resources/${resourceSlug}`, type: "article" },
+    title: post.title,
+    description: post.meta_description,
+    alternates: {
+      canonical: `https://acrorefrigeration.com.au/resources/${resourceSlug}`,
+    },
+    openGraph: {
+      url: `https://acrorefrigeration.com.au/resources/${resourceSlug}`,
+      type: "article",
+    },
   };
 }
 
 export default async function ResourcePageRoute({ params }: Props) {
   const { resourceSlug } = await params;
-  const resource = resourcesData[resourceSlug];
-  if (!resource) notFound();
+  const supabase = await createClient();
+  const post = await getPostBySlug(supabase, resourceSlug);
+  if (!post) notFound();
+
+  const relatedPosts =
+    post.related_slugs?.length > 0
+      ? (
+          await supabase
+            .from("posts")
+            .select("id, slug, type, title, description, date")
+            .in("slug", post.related_slugs)
+            .eq("published", true)
+        ).data ?? []
+      : [];
 
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: resource.title,
-    description: resource.description,
+    headline: post.title,
+    description: post.meta_description,
     url: `https://acrorefrigeration.com.au/resources/${resourceSlug}`,
     author: {
       "@type": "Organization",
@@ -52,17 +77,38 @@ export default async function ResourcePageRoute({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://acrorefrigeration.com.au" },
-      { "@type": "ListItem", position: 2, name: "Resources", item: "https://acrorefrigeration.com.au/resources" },
-      { "@type": "ListItem", position: 3, name: resource.title, item: `https://acrorefrigeration.com.au/resources/${resourceSlug}` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://acrorefrigeration.com.au",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Resources",
+        item: "https://acrorefrigeration.com.au/resources",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `https://acrorefrigeration.com.au/resources/${resourceSlug}`,
+      },
     ],
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <ResourcePage />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <ResourcePage post={post} relatedPosts={relatedPosts} />
     </>
   );
 }

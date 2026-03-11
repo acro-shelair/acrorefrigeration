@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+import { createStaticClient } from "@/lib/supabase/static";
+import { getAllCities } from "@/lib/supabase/content";
 import LocationsHub from "@/components/pages/LocationsHub";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Repairs Near You — Service Areas",
@@ -9,6 +13,8 @@ export const metadata: Metadata = {
   openGraph: { url: "https://acrorefrigeration.com.au/locations" },
 };
 
-export default function LocationsPage() {
-  return <LocationsHub />;
+export default async function LocationsPage() {
+  const supabase = createStaticClient();
+  const cities = await getAllCities(supabase);
+  return <LocationsHub cities={cities} />;
 }

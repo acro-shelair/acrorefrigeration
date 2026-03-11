@@ -8,7 +8,9 @@ import CTABanner from "@/components/home/CTABanner";
 import FAQSection from "@/components/home/FAQSection";
 import equipmentImg from "@/assets/equipment.jpg";
 import { motion, Variants } from "framer-motion";
-import { services, serviceSteps, servicesPage } from "@/data/services";
+import { serviceSteps, servicesPage } from "@/data/services";
+import type { Service } from "@/lib/supabase/content";
+import { getIcon } from "@/app/admin/services/icons";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -24,7 +26,7 @@ const cardVariant: Variants = {
   }),
 };
 
-const Services = () => (
+const Services = ({ services }: { services: Service[] }) => (
   <Layout>
     
 
@@ -80,9 +82,11 @@ const Services = () => (
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {services.map((s, i) => (
+          {services.map((s, i) => {
+            const Icon = getIcon(s.icon_name);
+            return (
             <motion.div
-              key={s.title}
+              key={s.id}
               custom={i}
               variants={cardVariant}
               initial="hidden"
@@ -92,11 +96,11 @@ const Services = () => (
               className="bg-card rounded-2xl p-8 border border-border shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
-                <s.icon className="w-6 h-6 text-primary" />
+                <Icon className="w-6 h-6 text-primary" />
               </div>
               <h3 className="font-bold text-lg mb-3">{s.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                {s.desc}
+                {s.description}
               </p>
               <Button
                 asChild
@@ -108,7 +112,8 @@ const Services = () => (
                 </Link>
               </Button>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
