@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Index from "@/components/pages/Index";
+import { createClient } from "@/lib/supabase/server";
+import { faqSection, testimonialsSection } from "@/data/home";
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Repair & Maintenance Brisbane",
@@ -33,12 +35,56 @@ const localBusinessSchema = {
   priceRange: "$$",
 };
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const [{ data: faqs }, { data: testimonials }] = await Promise.all([
+    supabase.from("faqs").select("*").order("position"),
+    supabase.from("testimonials").select("*").order("position"),
+  ]);
+
+  const faqItems = faqs?.length
+    ? faqs.map((f) => ({ q: f.question, a: f.answer }))
+    : faqSection.faqs;
+
+  const reviewItems = testimonials?.length
+    ? testimonials.map((t) => ({ name: t.name, role: t.role, quote: t.quote, rating: t.rating ?? 5 }))
+    : testimonialsSection.testimonials.map((t) => ({ ...t, rating: 5 }));
+
+  const reviewsSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Acro Refrigeration",
+    review: reviewItems.map((t) => ({
+      "@type": "Review",
+      author: { "@type": "Person", name: t.name },
+      reviewBody: t.quote,
+      reviewRating: { "@type": "Rating", ratingValue: t.rating, bestRating: 5 },
+    })),
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <Index />
     </>

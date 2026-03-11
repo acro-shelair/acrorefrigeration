@@ -20,6 +20,7 @@ import {
   MapPin,
   Home,
   SlidersHorizontal,
+  BookMarked,
 } from "lucide-react";
 import Image from "next/image";
 import acroLogo from "@/assets/acro-logo.png";
@@ -34,8 +35,12 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { label: "Home Page",    href: "/admin/home",     icon: Home,               permission: "admin_only" },
-  { label: "Settings",     href: "/admin/settings", icon: SlidersHorizontal,  permission: "admin_only" },
+  {
+    label: "Home Page",
+    href: "/admin/home",
+    icon: Home,
+    permission: "admin_only",
+  },
   { label: "Posts", href: "/admin/posts", icon: FileText, permission: "posts" },
   {
     label: "Services",
@@ -51,7 +56,12 @@ const navItems: NavItem[] = [
   },
   { label: "Brands", href: "/admin/brands", icon: Tag, permission: "brands" },
   // { label: "Projects",     href: "/admin/projects",     icon: FolderOpen,    permission: "projects" },
-  { label: "Locations", href: "/admin/locations", icon: MapPin, permission: "locations" },
+  {
+    label: "Locations",
+    href: "/admin/locations",
+    icon: MapPin,
+    permission: "locations",
+  },
   {
     label: "Testimonials",
     href: "/admin/testimonials",
@@ -59,9 +69,20 @@ const navItems: NavItem[] = [
     permission: "testimonials",
   },
   {
+    label: "Employee Portal",
+    href: "/admin/portal",
+    icon: BookMarked,
+  },
+  {
     label: "Users",
     href: "/admin/users",
     icon: Users,
+    permission: "admin_only",
+  },
+  {
+    label: "Settings",
+    href: "/admin/settings",
+    icon: SlidersHorizontal,
     permission: "admin_only",
   },
   {

@@ -15,6 +15,7 @@ export const PERMISSION_KEYS = [
   "projects",
   "testimonials",
   "locations",
+  "portal",
 ] as const;
 
 export type PermissionKey = (typeof PERMISSION_KEYS)[number];
@@ -27,6 +28,7 @@ export const PERMISSION_LABELS: Record<PermissionKey, string> = {
   projects:     "Projects",
   testimonials: "Testimonials",
   locations:    "Locations",
+  portal:       "Portal",
 };
 
 // Predefined permission sets

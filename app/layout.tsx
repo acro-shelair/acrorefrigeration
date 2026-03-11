@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { headers } from "next/headers";
 import { Providers } from "@/components/providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -39,21 +40,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isAdmin = pathname.startsWith("/admin");
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable} antialiased`} suppressHydrationWarning>
         <Providers>
-          <LoadingScreen />
-          <NavigationProgress />
+          {!isAdmin && <LoadingScreen />}
+          {!isAdmin && <NavigationProgress />}
           <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1 pt-16 md:pt-20">{children}</main>
-            <Footer />
+            {!isAdmin && <Navbar />}
+            <main className={isAdmin ? "flex-1" : "flex-1 pt-16 md:pt-20"}>{children}</main>
+            {!isAdmin && <Footer />}
           </div>
         </Providers>
       </body>

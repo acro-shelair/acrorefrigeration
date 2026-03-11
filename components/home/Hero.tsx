@@ -24,6 +24,7 @@ function StatCard({
   return (
     <motion.div
       className={`${className} z-10`}
+      suppressHydrationWarning
       initial={{ opacity: 0, scale: 0.75 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay, ease: "backOut" }}
