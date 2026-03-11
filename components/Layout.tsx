@@ -1,15 +1,7 @@
 import { ReactNode } from "react";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
-import LoadingScreen from "./LoadingScreen";
 
-const Layout = ({ children }: { children: ReactNode }) => (
-  <div className="min-h-screen flex flex-col">
-    <LoadingScreen />
-    <Navbar />
-    <main className="flex-1 pt-16 md:pt-20">{children}</main>
-    <Footer />
-  </div>
-);
+// Navbar, Footer, and LoadingScreen now live in app/layout.tsx (mounted once).
+// This component is kept as a passthrough so page components don't need changes.
+const Layout = ({ children }: { children: ReactNode }) => <>{children}</>;
 
 export default Layout;

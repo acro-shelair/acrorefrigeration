@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import LoadingScreen from "@/components/LoadingScreen";
+import NavigationProgress from "@/components/NavigationProgress";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,7 +47,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable} antialiased`} suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <Providers>
+          <LoadingScreen />
+          <NavigationProgress />
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1 pt-16 md:pt-20">{children}</main>
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );
