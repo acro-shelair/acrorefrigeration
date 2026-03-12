@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -23,6 +24,7 @@ import {
   Home,
   SlidersHorizontal,
   BookMarked,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import acroLogo from "@/assets/acro-logo.png";
@@ -112,6 +114,10 @@ export default function AdminSidebar({
   };
 
   const groups = visibleGroups(profile);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  const toggle = (label: string) =>
+    setCollapsed((prev) => ({ ...prev, [label]: !prev[label] }));
 
   return (
     <aside className="fixed inset-y-0 left-0 w-60 bg-zinc-950 flex flex-col z-40">
@@ -135,33 +141,49 @@ export default function AdminSidebar({
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-4">
-        {groups.map((group) => (
-          <div key={group.label}>
-            <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">
-              {group.label}
-            </p>
-            <div className="space-y-0.5">
-              {group.items.map(({ label, href, icon: Icon }) => {
-                const active = pathname.startsWith(href);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      active
-                        ? "bg-primary text-white"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-800"
-                    }`}
-                  >
-                    <Icon className="w-4 h-4 flex-shrink-0" />
-                    {label}
-                  </Link>
-                );
-              })}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-1">
+        {groups.map((group) => {
+          const isCollapsed = !!collapsed[group.label];
+          return (
+            <div key={group.label}>
+              <button
+                onClick={() => toggle(group.label)}
+                className="w-full flex items-center justify-between px-3 py-1.5 rounded-md hover:bg-zinc-800/50 transition-colors group"
+              >
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 group-hover:text-zinc-400">
+                  {group.label}
+                </span>
+                <ChevronDown
+                  className={`w-3 h-3 text-zinc-600 group-hover:text-zinc-400 transition-transform duration-200 ${
+                    isCollapsed ? "-rotate-90" : ""
+                  }`}
+                />
+              </button>
+
+              {!isCollapsed && (
+                <div className="space-y-0.5 mt-0.5 mb-2">
+                  {group.items.map(({ label, href, icon: Icon }) => {
+                    const active = pathname.startsWith(href);
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          active
+                            ? "bg-primary text-white"
+                            : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        {label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       {/* Footer */}
