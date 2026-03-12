@@ -38,9 +38,15 @@ export default function LoginPage() {
       return;
     }
     // Fire-and-forget — don't block the redirect on the log write
-    logActivity("login", "auth", `Logged in: ${data.email}`, undefined, data.email).catch(() => {});
+    logActivity(
+      "login",
+      "auth",
+      `Logged in: ${data.email}`,
+      undefined,
+      data.email
+    ).catch(() => {});
     // Hard redirect — ensures auth cookies are fully set before the new page loads
-    window.location.href = "/admin/posts";
+    window.location.href = "/admin";
   };
 
   return (
