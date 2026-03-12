@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { getLegalPage } from "@/lib/supabase/legal";
 import PrivacyPolicy from "@/components/pages/PrivacyPolicy";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Acro Refrigeration – Brisbane Commercial Refrigeration",
@@ -9,6 +13,8 @@ export const metadata: Metadata = {
   openGraph: { url: "https://acrorefrigeration.com.au/privacy", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
 };
 
-export default function PrivacyPolicyPage() {
-  return <PrivacyPolicy />;
+export default async function PrivacyPolicyPage() {
+  const supabase = await createClient();
+  const legalData = await getLegalPage(supabase, "privacy");
+  return <PrivacyPolicy legalData={legalData} />;
 }

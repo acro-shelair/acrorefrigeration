@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { getLegalPage } from "@/lib/supabase/legal";
 import TermsOfService from "@/components/pages/TermsOfService";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | Acro Refrigeration – Brisbane Commercial Refrigeration",
@@ -9,6 +13,8 @@ export const metadata: Metadata = {
   openGraph: { url: "https://acrorefrigeration.com.au/terms", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
 };
 
-export default function TermsOfServicePage() {
-  return <TermsOfService />;
+export default async function TermsOfServicePage() {
+  const supabase = await createClient();
+  const legalData = await getLegalPage(supabase, "terms");
+  return <TermsOfService legalData={legalData} />;
 }

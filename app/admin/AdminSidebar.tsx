@@ -78,6 +78,12 @@ const navItems: NavItem[] = [
     permission: "admin_only",
   },
   {
+    label: "Legal Pages",
+    href: "/admin/legal",
+    icon: FileText,
+    permission: "admin_only",
+  },
+  {
     label: "Employee Portal",
     href: "/admin/portal",
     icon: BookMarked,
