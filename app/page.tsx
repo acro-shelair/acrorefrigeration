@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Index from "@/components/pages/Index";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { withRetry } from "@/lib/retry";
 import { faqSection, testimonialsSection } from "@/data/home";
+
+export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Repair & Maintenance Brisbane",
@@ -50,10 +53,11 @@ const localBusinessSchema = {
 };
 
 export default async function Home() {
-  const supabase = await createClient();
-  const [{ data: faqs }, { data: testimonials }] = await Promise.all([
-    supabase.from("faqs").select("*").order("position"),
-    supabase.from("testimonials").select("*").order("position"),
+  const supabase = createAdminClient();
+  const [{ data: faqs }, { data: testimonials }, { data: pricingTiersData }] = await Promise.all([
+    withRetry(() => supabase.from("faqs").select("*").order("position")),
+    withRetry(() => supabase.from("testimonials").select("*").order("position")),
+    withRetry(() => supabase.from("pricing_tiers").select("*").order("position")),
   ]);
 
   const faqItems = faqs?.length
@@ -108,7 +112,11 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Index />
+      <Index
+        faqItems={faqItems}
+        reviewItems={reviewItems}
+        pricingTiers={pricingTiersData ?? []}
+      />
     </>
   );
 }

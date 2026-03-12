@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createStaticClient } from "@/lib/supabase/static";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllCities, getCityWithSuburbs, getSuburbWithCity, getAllServices, getAllIndustries } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import SuburbPage from "@/components/pages/SuburbPage";
 
 export const revalidate = 300;
@@ -11,23 +11,27 @@ export const dynamicParams = true;
 type Props = { params: Promise<{ citySlug: string; suburbSlug: string }> };
 
 export async function generateStaticParams() {
-  const supabase = createStaticClient();
-  const cities = await getAllCities(supabase);
-  const withSuburbs = await Promise.all(
-    cities.map((c) => getCityWithSuburbs(supabase, c.slug))
-  );
-  return withSuburbs.flatMap((city) =>
-    (city?.location_suburbs ?? []).map((s) => ({
-      citySlug:   city!.slug,
-      suburbSlug: s.slug,
-    }))
-  );
+  try {
+    const supabase = createAdminClient();
+    const cities = await withRetry(() => getAllCities(supabase));
+    const withSuburbs = await Promise.all(
+      cities.map((c) => withRetry(() => getCityWithSuburbs(supabase, c.slug)))
+    );
+    return withSuburbs.flatMap((city) =>
+      (city?.location_suburbs ?? []).map((s) => ({
+        citySlug:   city!.slug,
+        suburbSlug: s.slug,
+      }))
+    );
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { citySlug, suburbSlug } = await params;
-  const supabase = await createClient();
-  const result = await getSuburbWithCity(supabase, citySlug, suburbSlug);
+  const supabase = createAdminClient();
+  const result = await withRetry(() => getSuburbWithCity(supabase, citySlug, suburbSlug));
   if (!result) return {};
   const { suburb } = result;
   return {
@@ -40,14 +44,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SuburbPageRoute({ params }: Props) {
   const { citySlug, suburbSlug } = await params;
-  const supabase = await createClient();
-  const result = await getSuburbWithCity(supabase, citySlug, suburbSlug);
+  const supabase = createAdminClient();
+  const result = await withRetry(() => getSuburbWithCity(supabase, citySlug, suburbSlug));
   if (!result) notFound();
   const { city, suburb } = result;
 
   const [services, industries] = await Promise.all([
-    getAllServices(supabase),
-    getAllIndustries(supabase),
+    withRetry(() => getAllServices(supabase)),
+    withRetry(() => getAllIndustries(supabase)),
   ]);
 
   const localBusinessSchema = {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getPublishedPosts } from "@/lib/supabase/posts";
+import { withRetry } from "@/lib/retry";
 import Resources from "@/components/pages/Resources";
 
 export const revalidate = 300;
@@ -23,8 +24,8 @@ const breadcrumbSchema = {
 };
 
 export default async function ResourcesPage() {
-  const supabase = await createClient();
-  const posts = await getPublishedPosts(supabase);
+  const supabase = createAdminClient();
+  const posts = await withRetry(() => getPublishedPosts(supabase));
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Layout from "@/components/Layout";
 import Hero from "@/components/home/Hero";
 import TrustBar from "@/components/home/TrustBar";
+import type { PricingTier, Testimonial, FAQ } from "@/lib/supabase/content";
 
 const ProblemSection = dynamic(
   () => import("@/components/home/ProblemSection")
@@ -30,7 +31,16 @@ const PricingSection = dynamic(() => import("@/components/home/PricingSection"))
 const CTABanner = dynamic(() => import("@/components/home/CTABanner"));
 const FAQSection = dynamic(() => import("@/components/home/FAQSection"), { ssr: false });
 
-const Index = () => (
+type ReviewItem = { name: string; role: string; quote: string; rating: number };
+type FaqItem = { q: string; a: string };
+
+interface IndexProps {
+  faqItems: FaqItem[];
+  reviewItems: ReviewItem[];
+  pricingTiers: PricingTier[];
+}
+
+const Index = ({ faqItems, reviewItems, pricingTiers }: IndexProps) => (
   <Layout>
     <Hero />
     <TrustBar />
@@ -40,12 +50,12 @@ const Index = () => (
     <ProcessTimeline />
     <IndustryCards />
     <BrandsSection />
-    <Testimonials />
+    <Testimonials initialTestimonials={reviewItems} />
     <ClientsSection />
     <LocationsSection />
-    <PricingSection />
+    <PricingSection initialTiers={pricingTiers} />
     <CTABanner />
-    <FAQSection />
+    <FAQSection initialFaqs={faqItems} />
   </Layout>
 );
 

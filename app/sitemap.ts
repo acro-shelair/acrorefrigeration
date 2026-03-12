@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { createStaticClient } from "@/lib/supabase/static";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { withRetry } from "@/lib/retry";
 import { resourcesData } from "@/lib/seo/resources";
 import { servicesData } from "@/lib/seo/services";
 import { industriesData } from "@/lib/seo/industries";
@@ -10,13 +11,15 @@ const BASE_URL = "https://acrorefrigeration.com.au";
 export const revalidate = 3600; // regenerate sitemap hourly
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createStaticClient();
+  const supabase = createAdminClient();
 
   // Fetch dynamic location data from Supabase
-  const { data: cities } = await supabase
-    .from("location_cities")
-    .select("slug, location_suburbs(slug)")
-    .order("position");
+  const { data: cities } = await withRetry(() =>
+    supabase
+      .from("location_cities")
+      .select("slug, location_suburbs(slug)")
+      .order("position")
+  );
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/`,           changeFrequency: "weekly",  priority: 1.0 },

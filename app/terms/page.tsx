@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getLegalPage } from "@/lib/supabase/legal";
 import TermsOfService from "@/components/pages/TermsOfService";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TermsOfServicePage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const legalData = await getLegalPage(supabase, "terms");
   return <TermsOfService legalData={legalData} />;
 }

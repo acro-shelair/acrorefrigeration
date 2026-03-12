@@ -7,8 +7,6 @@ import { usePathname } from "next/navigation";
 import { Menu, X, Phone, ChevronDown, MapPin, Wrench, Building2, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import acroLogo from "@/assets/acro-logo.png";
-import { createClient } from "@/lib/supabase/client";
-import { useLoading } from "@/lib/loading-context";
 
 type DropdownKey = "services" | "industries" | "brands" | "locations";
 type MenuItem = { label: string; href: string; topLink?: true };
@@ -42,29 +40,20 @@ function formatPhone(raw: string) {
   return raw.replace(/(\d{4})(\d{3})(\d{3})/, "$1 $2 $3");
 }
 
-const Navbar = ({ phone = "1300227600" }: { phone?: string }) => {
-  const { markReady } = useLoading();
-  const [serviceItems, setServiceItems]   = useState<DynamicItem[]>([]);
-  const [industryItems, setIndustryItems] = useState<DynamicItem[]>([]);
-  const [brandItems, setBrandItems]       = useState<DynamicItem[]>([]);
-  const [cityItems, setCityItems]         = useState<DynamicItem[]>([]);
+const Navbar = ({
+  phone = "1300227600",
+  serviceItems = [],
+  industryItems = [],
+  brandItems = [],
+  cityItems = [],
+}: {
+  phone?: string;
+  serviceItems?: DynamicItem[];
+  industryItems?: DynamicItem[];
+  brandItems?: DynamicItem[];
+  cityItems?: DynamicItem[];
+}) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    Promise.all([
-      supabase.from("services").select("slug, title").not("slug", "is", null).order("position"),
-      supabase.from("industries").select("slug, title").order("position"),
-      supabase.from("brands").select("slug, name").order("position"),
-      supabase.from("location_cities").select("slug, name").order("position"),
-    ]).then(([services, industries, brands, cities]) => {
-      if (services.data)   setServiceItems(services.data);
-      if (industries.data) setIndustryItems(industries.data);
-      if (brands.data)     setBrandItems(brands.data.map((b) => ({ slug: b.slug, title: b.name })));
-      if (cities.data)     setCityItems(cities.data.map((c) => ({ slug: c.slug, title: c.name })));
-      markReady();
-    });
-  }, [markReady]);
   const [activeDropdown, setActiveDropdown] = useState<DropdownKey | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<DropdownKey | null>(null);
   const pathname = usePathname();

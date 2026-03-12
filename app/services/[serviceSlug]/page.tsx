@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createStaticClient } from "@/lib/supabase/static";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getServiceBySlug, getPublishedServiceSlugs } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import ServicePage from "@/components/pages/ServicePage";
 
 export const revalidate = 300;
@@ -11,15 +11,19 @@ export const dynamicParams = true;
 type Props = { params: Promise<{ serviceSlug: string }> };
 
 export async function generateStaticParams() {
-  const supabase = createStaticClient();
-  const slugs = await getPublishedServiceSlugs(supabase);
-  return slugs.map((slug) => ({ serviceSlug: slug }));
+  try {
+    const supabase = createAdminClient();
+    const slugs = await withRetry(() => getPublishedServiceSlugs(supabase));
+    return slugs.map((slug) => ({ serviceSlug: slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { serviceSlug } = await params;
-  const supabase = await createClient();
-  const service = await getServiceBySlug(supabase, serviceSlug);
+  const supabase = createAdminClient();
+  const service = await withRetry(() => getServiceBySlug(supabase, serviceSlug));
   if (!service) return {};
   return {
     title: service.title,
@@ -31,19 +35,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServicePageRoute({ params }: Props) {
   const { serviceSlug } = await params;
-  const supabase = await createClient();
-  const service = await getServiceBySlug(supabase, serviceSlug);
+  const supabase = createAdminClient();
+  const service = await withRetry(() => getServiceBySlug(supabase, serviceSlug));
   if (!service) notFound();
 
   // Fetch related services
-  const relatedServices =
-    service.related_service_slugs?.length > 0
-      ? (await supabase
+  const relatedSlugs = service.related_service_slugs ?? [];
+  const relatedServices = relatedSlugs.length > 0
+    ? (await withRetry(() =>
+        supabase
           .from("services")
           .select("slug, title, description")
-          .in("slug", service.related_service_slugs)
-        ).data ?? []
-      : [];
+          .in("slug", relatedSlugs)
+      )).data ?? []
+    : [];
 
   const serviceSchema = {
     "@context": "https://schema.org",

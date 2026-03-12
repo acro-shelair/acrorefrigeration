@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import CTABanner from "@/components/home/CTABanner";
 import FAQSection from "@/components/home/FAQSection";
 import Layout from "@/components/Layout";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllPricingTiers } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import PricingCards from "./PricingCards";
 
 export const revalidate = 300;
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  const supabase = await createClient();
-  const tiers = await getAllPricingTiers(supabase);
+  const supabase = createAdminClient();
+  const tiers = await withRetry(() => getAllPricingTiers(supabase));
 
   return (
     <Layout>

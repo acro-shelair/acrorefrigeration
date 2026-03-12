@@ -1,23 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ScrollReveal from "@/components/ScrollReveal";
-import { createClient } from "@/lib/supabase/client";
-import type { FAQ } from "@/lib/supabase/content";
 import { faqSection } from "@/data/home";
 
-const FAQSection = () => {
-  const [faqs, setFaqs] = useState<FAQ[]>([]);
+type FaqItem = { q: string; a: string };
 
-  useEffect(() => {
-    createClient().from("faqs").select("*").order("position")
-      .then(({ data }) => { if (data?.length) setFaqs(data); });
-  }, []);
-
-  const items = faqs.length > 0
-    ? faqs.map((f) => ({ q: f.question, a: f.answer }))
-    : faqSection.faqs;
+const FAQSection = ({ initialFaqs }: { initialFaqs?: FaqItem[] }) => {
+  const items = initialFaqs?.length ? initialFaqs : faqSection.faqs;
 
   return (
     <section className="section-padding bg-background">

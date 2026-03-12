@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { createStaticClient } from "@/lib/supabase/static";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllCities } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import LocationsHub from "@/components/pages/LocationsHub";
 
 export const revalidate = 300;
@@ -23,8 +24,8 @@ const breadcrumbSchema = {
 };
 
 export default async function LocationsPage() {
-  const supabase = createStaticClient();
-  const cities = await getAllCities(supabase);
+  const supabase = createAdminClient();
+  const cities = await withRetry(() => getAllCities(supabase));
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />

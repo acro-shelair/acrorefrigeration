@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createStaticClient } from "@/lib/supabase/static";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllCities, getCityWithSuburbs } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import CityHub from "@/components/pages/CityHub";
 
 export const revalidate = 300;
@@ -11,15 +11,19 @@ export const dynamicParams = true;
 type Props = { params: Promise<{ citySlug: string }> };
 
 export async function generateStaticParams() {
-  const supabase = createStaticClient();
-  const cities = await getAllCities(supabase);
-  return cities.map((city) => ({ citySlug: city.slug }));
+  try {
+    const supabase = createAdminClient();
+    const cities = await withRetry(() => getAllCities(supabase));
+    return cities.map((city) => ({ citySlug: city.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { citySlug } = await params;
-  const supabase = await createClient();
-  const city = await getCityWithSuburbs(supabase, citySlug);
+  const supabase = createAdminClient();
+  const city = await withRetry(() => getCityWithSuburbs(supabase, citySlug));
   if (!city) return {};
   return {
     title: `Commercial Refrigeration Repairs ${city.name}`,
@@ -31,8 +35,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CityPageRoute({ params }: Props) {
   const { citySlug } = await params;
-  const supabase = await createClient();
-  const city = await getCityWithSuburbs(supabase, citySlug);
+  const supabase = createAdminClient();
+  const city = await withRetry(() => getCityWithSuburbs(supabase, citySlug));
   if (!city) notFound();
 
   const localBusinessSchema = {

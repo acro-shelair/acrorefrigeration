@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, Variants } from "framer-motion";
 import ScrollReveal from "@/components/ScrollReveal";
-import { createClient } from "@/lib/supabase/client";
 import type { PricingTier } from "@/lib/supabase/content";
 import { pricingTiers as fallbackTiers, pricingPage } from "@/data/pricing";
 
@@ -20,20 +18,9 @@ const cardVariant: Variants = {
   }),
 };
 
-const PricingSection = () => {
-  const [tiers, setTiers] = useState<PricingTier[]>([]);
-  useEffect(() => {
-    createClient()
-      .from("pricing_tiers")
-      .select("*")
-      .order("position")
-      .then(({ data }) => {
-        if (data?.length) setTiers(data);
-      });
-  }, []);
-
-  const items: PricingTier[] = tiers.length
-    ? tiers
+const PricingSection = ({ initialTiers }: { initialTiers: PricingTier[] }) => {
+  const items: PricingTier[] = initialTiers.length
+    ? initialTiers
     : fallbackTiers.map((t, i) => ({
         id: String(i),
         position: i,

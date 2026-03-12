@@ -4,30 +4,20 @@ import { useState, useEffect, useCallback } from "react";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import ScrollReveal from "@/components/ScrollReveal";
-import { createClient } from "@/lib/supabase/client";
-import type { Testimonial } from "@/lib/supabase/content";
 import { testimonialsSection } from "@/data/home";
 
 const AUTOPLAY_INTERVAL = 5000;
 
-const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+type ReviewItem = { name: string; role: string; quote: string; rating: number };
+
+const Testimonials = ({ initialTestimonials }: { initialTestimonials: ReviewItem[] }) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [paused, setPaused] = useState(false);
-  useEffect(() => {
-    createClient()
-      .from("testimonials")
-      .select("*")
-      .order("position")
-      .then(({ data }) => {
-        if (data?.length) setTestimonials(data);
-      });
-  }, []);
 
   const items =
-    testimonials.length > 0
-      ? testimonials
+    initialTestimonials.length > 0
+      ? initialTestimonials.map((t, i) => ({ id: String(i), ...t, position: i }))
       : testimonialsSection.testimonials.map((t, i) => ({
           id: String(i),
           ...t,

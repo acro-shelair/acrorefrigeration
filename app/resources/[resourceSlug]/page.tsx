@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createStaticClient } from "@/lib/supabase/static";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getPublishedPosts, getPostBySlug } from "@/lib/supabase/posts";
+import { withRetry } from "@/lib/retry";
 import ResourcePage from "@/components/pages/ResourcePage";
 
 export const revalidate = 300;
@@ -11,15 +11,19 @@ export const dynamicParams = true;
 type Props = { params: Promise<{ resourceSlug: string }> };
 
 export async function generateStaticParams() {
-  const supabase = createStaticClient();
-  const posts = await getPublishedPosts(supabase);
-  return posts.map((p) => ({ resourceSlug: p.slug }));
+  try {
+    const supabase = createAdminClient();
+    const posts = await withRetry(() => getPublishedPosts(supabase));
+    return posts.map((p) => ({ resourceSlug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { resourceSlug } = await params;
-  const supabase = await createClient();
-  const post = await getPostBySlug(supabase, resourceSlug);
+  const supabase = createAdminClient();
+  const post = await withRetry(() => getPostBySlug(supabase, resourceSlug));
   if (!post) return {};
   return {
     title: post.title,
@@ -37,18 +41,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ResourcePageRoute({ params }: Props) {
   const { resourceSlug } = await params;
-  const supabase = await createClient();
-  const post = await getPostBySlug(supabase, resourceSlug);
+  const supabase = createAdminClient();
+  const post = await withRetry(() => getPostBySlug(supabase, resourceSlug));
   if (!post) notFound();
 
   const relatedPosts =
     post.related_slugs?.length > 0
       ? (
-          await supabase
-            .from("posts")
-            .select("id, slug, type, title, description, date")
-            .in("slug", post.related_slugs)
-            .eq("published", true)
+          await withRetry(() =>
+            supabase
+              .from("posts")
+              .select("id, slug, type, title, description, date")
+              .in("slug", post.related_slugs)
+              .eq("published", true)
+          )
         ).data ?? []
       : [];
 

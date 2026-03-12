@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getLegalPage } from "@/lib/supabase/legal";
 import PrivacyPolicy from "@/components/pages/PrivacyPolicy";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PrivacyPolicyPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const legalData = await getLegalPage(supabase, "privacy");
   return <PrivacyPolicy legalData={legalData} />;
 }

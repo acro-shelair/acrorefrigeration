@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createStaticClient } from "@/lib/supabase/static";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllIndustries, getIndustryBySlug } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import IndustryPage from "@/components/pages/IndustryPage";
 
 export const revalidate = 300;
@@ -11,15 +11,19 @@ export const dynamicParams = true;
 type Props = { params: Promise<{ industrySlug: string }> };
 
 export async function generateStaticParams() {
-  const supabase = createStaticClient();
-  const industries = await getAllIndustries(supabase);
-  return industries.map((i) => ({ industrySlug: i.slug }));
+  try {
+    const supabase = createAdminClient();
+    const industries = await withRetry(() => getAllIndustries(supabase));
+    return industries.map((i) => ({ industrySlug: i.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { industrySlug } = await params;
-  const supabase = await createClient();
-  const industry = await getIndustryBySlug(supabase, industrySlug);
+  const supabase = createAdminClient();
+  const industry = await withRetry(() => getIndustryBySlug(supabase, industrySlug));
   if (!industry) return {};
   return {
     title: industry.title,
@@ -31,13 +35,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function IndustryPageRoute({ params }: Props) {
   const { industrySlug } = await params;
-  const supabase = await createClient();
-  const industry = await getIndustryBySlug(supabase, industrySlug);
+  const supabase = createAdminClient();
+  const industry = await withRetry(() => getIndustryBySlug(supabase, industrySlug));
   if (!industry) notFound();
 
-  const relatedIndustries = industry.related_industry_slugs?.length > 0
-    ? (await supabase.from("industries").select("slug, title, description")
-        .in("slug", industry.related_industry_slugs)).data ?? []
+  const relatedSlugs = industry.related_industry_slugs ?? [];
+  const relatedIndustries = relatedSlugs.length > 0
+    ? (await withRetry(() =>
+        supabase.from("industries").select("slug, title, description")
+          .in("slug", relatedSlugs)
+      )).data ?? []
     : [];
 
   const breadcrumbSchema = {

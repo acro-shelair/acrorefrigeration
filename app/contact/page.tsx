@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Contact from "@/components/pages/Contact";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getSiteSettings } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const supabase = await createClient();
-  const settings = await getSiteSettings(supabase);
+  const supabase = createAdminClient();
+  const settings = await withRetry(() => getSiteSettings(supabase));
   return <Contact settings={settings} />;
 }

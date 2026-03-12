@@ -4,7 +4,7 @@ import "./globals.css";
 import { headers } from "next/headers";
 import { Providers } from "@/components/providers";
 import Navbar from "@/components/Navbar";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getSiteSettings } from "@/lib/supabase/content";
 import Footer from "@/components/Footer";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -52,9 +52,17 @@ export default async function RootLayout({
   const pathname = headersList.get("x-pathname") ?? "";
   const isAdmin = pathname.startsWith("/admin");
 
-  const supabase = await createClient();
-  const settings = isAdmin ? null : await getSiteSettings(supabase);
-  const phone = settings?.phone ?? "1300227600";
+  const supabase = createAdminClient();
+  const [settings, navServices, navIndustries, navBrands, navCities] = isAdmin
+    ? [null, [], [], [], []]
+    : await Promise.all([
+        getSiteSettings(supabase),
+        supabase.from("services").select("slug, title").not("slug", "is", null).order("position").then(r => r.data ?? []),
+        supabase.from("industries").select("slug, title").order("position").then(r => r.data ?? []),
+        supabase.from("brands").select("slug, name").order("position").then(r => (r.data ?? []).map((b: {slug:string; name:string}) => ({ slug: b.slug, title: b.name }))),
+        supabase.from("location_cities").select("slug, name").order("position").then(r => (r.data ?? []).map((c: {slug:string; name:string}) => ({ slug: c.slug, title: c.name }))),
+      ]);
+  const phone = (settings as {phone?: string} | null)?.phone ?? "1300227600";
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -63,7 +71,15 @@ export default async function RootLayout({
           {!isAdmin && <LoadingScreen />}
           {!isAdmin && <NavigationProgress />}
           <div className="min-h-screen flex flex-col">
-            {!isAdmin && <Navbar phone={phone} />}
+            {!isAdmin && (
+              <Navbar
+                phone={phone}
+                serviceItems={navServices as {slug:string; title:string}[]}
+                industryItems={navIndustries as {slug:string; title:string}[]}
+                brandItems={navBrands as {slug:string; title:string}[]}
+                cityItems={navCities as {slug:string; title:string}[]}
+              />
+            )}
             <main className={isAdmin ? "flex-1" : "flex-1 pt-16 md:pt-20"}>{children}</main>
             {!isAdmin && <Footer />}
           </div>

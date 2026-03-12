@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getAllBrands, getAllOtherBrands } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import Brands from "@/components/pages/Brands";
 
 export const revalidate = 300;
@@ -23,10 +24,10 @@ const breadcrumbSchema = {
 };
 
 export default async function BrandsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const [brands, otherBrands] = await Promise.all([
-    getAllBrands(supabase),
-    getAllOtherBrands(supabase),
+    withRetry(() => getAllBrands(supabase)),
+    withRetry(() => getAllOtherBrands(supabase)),
   ]);
   return (
     <>
