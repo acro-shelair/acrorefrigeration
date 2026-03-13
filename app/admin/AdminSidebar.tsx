@@ -25,6 +25,8 @@ import {
   SlidersHorizontal,
   BookMarked,
   ChevronDown,
+  Menu,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import acroLogo from "@/assets/acro-logo.png";
@@ -115,12 +117,45 @@ export default function AdminSidebar({
 
   const groups = visibleGroups(profile);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggle = (label: string) =>
     setCollapsed((prev) => ({ ...prev, [label]: !prev[label] }));
 
+  const closeMobile = () => setMobileOpen(false);
+
   return (
-    <aside className="fixed inset-y-0 left-0 w-60 bg-zinc-950 flex flex-col z-40">
+    <>
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-zinc-950 border-b border-zinc-800 flex items-center gap-3 px-4 h-14">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <div className="flex items-center gap-2">
+          <Image
+            src={acroLogo}
+            alt="Acro Refrigeration"
+            width={28}
+            height={28}
+            className="rounded-full flex-shrink-0"
+          />
+          <p className="text-white font-semibold text-sm leading-none">Admin Panel</p>
+        </div>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/60"
+          onClick={closeMobile}
+        />
+      )}
+
+    <aside className={`fixed inset-y-0 left-0 w-60 bg-zinc-950 flex flex-col z-50 transition-transform duration-300 md:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
       {/* Logo */}
       <div className="px-5 py-5 border-b border-zinc-800">
         <div className="flex items-center gap-3">
@@ -131,12 +166,19 @@ export default function AdminSidebar({
             height={36}
             className="rounded-full flex-shrink-0"
           />
-          <div>
+          <div className="flex-1">
             <p className="text-white font-semibold text-sm leading-none">
               Acro Refrigeration
             </p>
             <p className="text-zinc-500 text-xs mt-0.5">Admin Panel</p>
           </div>
+          <button
+            onClick={closeMobile}
+            className="md:hidden p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            aria-label="Close menu"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -168,6 +210,7 @@ export default function AdminSidebar({
                       <Link
                         key={href}
                         href={href}
+                        onClick={closeMobile}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                           active
                             ? "bg-primary text-white"
@@ -229,5 +272,6 @@ export default function AdminSidebar({
         </div>
       </div>
     </aside>
+    </>
   );
 }

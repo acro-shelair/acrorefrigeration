@@ -29,8 +29,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900">
       <AdminSidebar userEmail={user.email ?? ""} profile={userProfile} />
-      <div className="pl-60">
-        <main className="max-w-5xl mx-auto px-8 py-8">{children}</main>
+      <div className="md:pl-60 pt-14 md:pt-0">
+        <main className="max-w-5xl mx-auto px-4 md:px-8 py-8">{children}</main>
       </div>
     </div>
   );

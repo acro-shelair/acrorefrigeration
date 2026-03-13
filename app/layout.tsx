@@ -69,7 +69,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} ${playfair.variable} antialiased`} suppressHydrationWarning>
         <Providers>
           {!isAdmin && <LoadingScreen />}
-          {!isAdmin && <NavigationProgress />}
+          <NavigationProgress />
           <div className="min-h-screen flex flex-col">
             {!isAdmin && (
               <Navbar
