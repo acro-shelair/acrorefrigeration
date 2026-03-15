@@ -22,7 +22,7 @@ const cardVariant: Variants = {
 };
 
 const LocationsSection = () => (
-  <section className="section-padding bg-secondary">
+  <section className="section-padding bg-background">
     <div className="container-narrow">
       <motion.div
         className="text-center mb-16"

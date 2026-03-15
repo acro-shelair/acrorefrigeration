@@ -6,7 +6,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { industries, industriesHomeSection } from "@/data/industries";
 
 const IndustryCards = () => (
-  <section className="section-padding bg-secondary">
+  <section className="section-padding bg-background">
     <div className="container-narrow">
       <ScrollReveal className="text-center mb-10 md:mb-16">
         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">{industriesHomeSection.heading}</h2>

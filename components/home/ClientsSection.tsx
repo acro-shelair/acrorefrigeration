@@ -25,7 +25,7 @@ const clients = [
 ];
 
 const ClientsSection = () => (
-  <section className="bg-background py-12 sm:py-16 px-4 sm:px-6">
+  <section className="bg-secondary py-12 sm:py-16 px-4 sm:px-6">
     <div className="container-narrow">
       <ScrollReveal className="text-center mb-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">

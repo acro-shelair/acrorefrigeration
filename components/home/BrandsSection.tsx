@@ -21,7 +21,7 @@ const cardVariant: Variants = {
 import { featuredBrands, otherBrandNames, brandsHomeSection } from "@/data/brands";
 
 const BrandsSection = () => (
-  <section className="section-padding bg-background">
+  <section className="section-padding bg-secondary">
     <div className="container-narrow">
       <motion.div
         className="text-center mb-16"
