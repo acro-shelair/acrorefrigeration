@@ -11,6 +11,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
@@ -112,27 +118,60 @@ const ResourcePage = ({
         <div className="container-narrow">
           <div className="max-w-3xl">
             <div className="border-t border-border pt-12 space-y-12">
-              {post.post_sections?.map((section, i) => (
-                <motion.div
-                  key={section.id}
-                  custom={i}
-                  variants={cardVariant}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.1 }}
-                >
-                  <h2 className="text-xl md:text-2xl font-extrabold mb-4">
-                    {section.heading}
-                  </h2>
-                  <div className="space-y-4">
-                    {section.content.map((para, j) => (
-                      <p key={j} className="text-muted-foreground leading-relaxed">
-                        {para}
-                      </p>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
+              {post.post_sections?.map((section, i) => {
+                const isFaq =
+                  section.heading.toLowerCase().includes("faq") ||
+                  section.heading.toLowerCase().includes("frequently asked");
+
+                return (
+                  <motion.div
+                    key={section.id}
+                    custom={i}
+                    variants={cardVariant}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.1 }}
+                  >
+                    <h2 className="text-xl md:text-2xl font-extrabold mb-4">
+                      {section.heading}
+                    </h2>
+
+                    {isFaq ? (
+                      <Accordion type="single" collapsible className="space-y-2">
+                        {section.content.map((item, j) => {
+                          const qMark = item.indexOf("? ");
+                          const question =
+                            qMark !== -1 ? item.slice(0, qMark + 1) : item;
+                          const answer =
+                            qMark !== -1 ? item.slice(qMark + 2) : "";
+                          return (
+                            <AccordionItem
+                              key={j}
+                              value={`faq-${i}-${j}`}
+                              className="border border-border rounded-xl px-5 data-[state=open]:border-primary/30"
+                            >
+                              <AccordionTrigger className="text-sm font-semibold text-left hover:no-underline py-4">
+                                {question}
+                              </AccordionTrigger>
+                              <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
+                                {answer}
+                              </AccordionContent>
+                            </AccordionItem>
+                          );
+                        })}
+                      </Accordion>
+                    ) : (
+                      <div className="space-y-4">
+                        {section.content.map((para, j) => (
+                          <p key={j} className="text-muted-foreground leading-relaxed">
+                            {para}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Inline CTA */}
