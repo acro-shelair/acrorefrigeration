@@ -100,7 +100,7 @@ const Footer = () => {
       .then(({ data }) => { if (data) setSettings(data); });
     supabase.from("services").select("slug, title").not("slug", "is", null).order("position").limit(6)
       .then(({ data }) => { if (data) setServices(data); });
-    supabase.from("industries").select("slug, title").order("position").limit(5)
+    supabase.from("industries").select("slug, title").order("position")
       .then(({ data }) => { if (data) setIndustries(data); });
   }, []);
 
