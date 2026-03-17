@@ -264,8 +264,15 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Credentials line */}
+        <div className="border-t border-dark-foreground/10 pt-6 pb-4 text-center">
+          <p className="text-[11px] text-dark-foreground/30 leading-relaxed">
+            ARCtick 61340 &middot; QBCC 15413155 &middot; Electrical Contractor 92536 &middot; NSW Contractor 479925C &middot; NECA Member &middot; Veteran Community Business
+          </p>
+        </div>
+
         {/* Bottom bar */}
-        <div className="border-t border-dark-foreground/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-dark-foreground/40">
+        <div className="border-t border-dark-foreground/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-dark-foreground/40">
           <p>
             © {new Date().getFullYear()} Acro Refrigeration. All rights
             reserved. ABN {abn}

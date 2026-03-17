@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Layout from "@/components/Layout";
 import Hero from "@/components/home/Hero";
 import TrustBar from "@/components/home/TrustBar";
+import CredentialsStrip from "@/components/home/CredentialsStrip";
 import type { PricingTier, Testimonial, FAQ } from "@/lib/supabase/content";
 
 const ProblemSection = dynamic(
@@ -23,16 +24,22 @@ const ProcessTimeline = dynamic(
 );
 const IndustryCards = dynamic(() => import("@/components/home/IndustryCards"));
 const BrandsSection = dynamic(() => import("@/components/home/BrandsSection"));
-const Testimonials = dynamic(() => import("@/components/home/Testimonials"), { ssr: false });
+const Testimonials = dynamic(() => import("@/components/home/Testimonials"), {
+  ssr: false,
+});
 const ClientsSection = dynamic(
   () => import("@/components/home/ClientsSection")
 );
 const LocationsSection = dynamic(
   () => import("@/components/home/LocationsSection")
 );
-const PricingSection = dynamic(() => import("@/components/home/PricingSection"));
+const PricingSection = dynamic(
+  () => import("@/components/home/PricingSection")
+);
 const CTABanner = dynamic(() => import("@/components/home/CTABanner"));
-const FAQSection = dynamic(() => import("@/components/home/FAQSection"), { ssr: false });
+const FAQSection = dynamic(() => import("@/components/home/FAQSection"), {
+  ssr: false,
+});
 
 type ReviewItem = { name: string; role: string; quote: string; rating: number };
 type FaqItem = { q: string; a: string };
@@ -50,6 +57,7 @@ const Index = ({ faqItems, reviewItems, pricingTiers }: IndexProps) => (
     <ProblemSection />
     <SolutionSection />
     <CapabilitiesGrid />
+    <CredentialsStrip />
     <WorkmanshipGuarantee />
     <ProcessTimeline />
     <IndustryCards />
