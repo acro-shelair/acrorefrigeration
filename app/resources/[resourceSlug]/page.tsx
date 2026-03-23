@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       url: `https://acrorefrigeration.com.au/resources/${resourceSlug}`,
       type: "article",
-      images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }],
+      images: [{ url: post.image_url ?? "/og-image.jpg", alt: post.title }],
     },
   };
 }

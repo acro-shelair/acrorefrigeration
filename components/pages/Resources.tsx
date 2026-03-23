@@ -2,7 +2,7 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
-import { ArrowRight, BookOpen, FileText, Video } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, Video, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Post } from "@/lib/supabase/posts";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
@@ -27,7 +27,7 @@ function TypeIcon({ type }: { type: string }) {
   return <FileText className="w-3 h-3" />;
 }
 
-const Resources = ({ posts }: { posts: Post[] }) => (
+const Resources = ({ posts, page, totalPages }: { posts: Post[]; page: number; totalPages: number }) => (
   <Layout>
     <section className="section-padding bg-background">
       <div className="container-narrow">
@@ -77,8 +77,18 @@ const Resources = ({ posts }: { posts: Post[] }) => (
               >
                 <Link
                   href={`/resources/${a.slug}`}
-                  className="block bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow group h-full"
+                  className="block bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow group h-full overflow-hidden"
                 >
+                  {a.image_url && (
+                    <div className="w-full h-40 overflow-hidden">
+                      <img
+                        src={a.image_url}
+                        alt={a.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full flex items-center gap-1">
                       <TypeIcon type={a.type} /> {a.type}
@@ -96,9 +106,57 @@ const Resources = ({ posts }: { posts: Post[] }) => (
                   <span className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
                     Read More <ArrowRight className="w-4 h-4" />
                   </span>
+                  </div>
                 </Link>
               </motion.div>
             ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-14">
+            {page > 1 ? (
+              <Link
+                href={`/resources?page=${page - 1}`}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border bg-card text-sm font-medium hover:border-primary/40 hover:text-primary transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" /> Previous
+              </Link>
+            ) : (
+              <span className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border bg-card text-sm font-medium opacity-30 cursor-not-allowed">
+                <ChevronLeft className="w-4 h-4" /> Previous
+              </span>
+            )}
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <Link
+                  key={p}
+                  href={`/resources?page=${p}`}
+                  className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-semibold transition-colors ${
+                    p === page
+                      ? "gradient-cta text-primary-foreground"
+                      : "border border-border bg-card hover:border-primary/40 hover:text-primary"
+                  }`}
+                >
+                  {p}
+                </Link>
+              ))}
+            </div>
+
+            {page < totalPages ? (
+              <Link
+                href={`/resources?page=${page + 1}`}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border bg-card text-sm font-medium hover:border-primary/40 hover:text-primary transition-colors"
+              >
+                Next <ChevronRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <span className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border bg-card text-sm font-medium opacity-30 cursor-not-allowed">
+                Next <ChevronRight className="w-4 h-4" />
+              </span>
+            )}
           </div>
         )}
       </div>

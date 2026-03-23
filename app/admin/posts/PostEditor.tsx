@@ -20,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle, Trash2, Upload, X } from "lucide-react";
+import { convertToWebp } from "@/lib/convertToWebp";
 
 // ─── Schema ────────────────────────────────────────────────────────────────
 
@@ -141,6 +142,8 @@ export default function PostEditor({ post }: { post?: Post }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>(post?.image_url ?? "");
   const isEdit = !!post;
 
   const defaultSections =
@@ -177,6 +180,28 @@ export default function PostEditor({ post }: { post?: Post }) {
     remove: removeSection,
   } = useFieldArray({ control, name: "sections" });
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const converted = await convertToWebp(file);
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+      const { error: uploadError } = await supabase.storage
+        .from("project-images")
+        .upload(path, converted, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from("project-images").getPublicUrl(path);
+      setImageUrl(data.publicUrl);
+    } catch (e: unknown) {
+      setServerError(e instanceof Error ? e.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     setSaving(true);
     setServerError(null);
@@ -195,6 +220,7 @@ export default function PostEditor({ post }: { post?: Post }) {
         .map((s) => s.trim())
         .filter(Boolean),
       published: data.published,
+      image_url: imageUrl || null,
       updated_at: new Date().toISOString(),
     };
 
@@ -259,8 +285,8 @@ export default function PostEditor({ post }: { post?: Post }) {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={saving}>
-            {saving ? "Saving…" : "Save Post"}
+          <Button type="submit" disabled={saving || uploading}>
+            {saving ? "Saving…" : uploading ? "Uploading…" : "Save Post"}
           </Button>
         </div>
       </div>
@@ -417,6 +443,44 @@ export default function PostEditor({ post }: { post?: Post }) {
             Published
           </Label>
         </div>
+      </div>
+
+      {/* Cover image */}
+      <div className="space-y-3">
+        <Label>Cover Image <span className="text-muted-foreground font-normal text-xs">(optional — shown on card and article page)</span></Label>
+        {imageUrl ? (
+          <div className="relative w-full rounded-xl overflow-hidden border border-border">
+            <img src={imageUrl} alt="Cover" className="w-full h-48 object-cover" />
+            <button
+              type="button"
+              onClick={() => setImageUrl("")}
+              className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <label className={`flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
+            {uploading ? (
+              <span className="text-sm text-muted-foreground">Uploading…</span>
+            ) : (
+              <>
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Upload className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium">Click to upload cover image</span>
+                <span className="text-xs text-muted-foreground">JPG, PNG, WebP — converted to WebP</span>
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              disabled={uploading}
+              onChange={handleImageUpload}
+            />
+          </label>
+        )}
       </div>
 
       {/* Sections */}

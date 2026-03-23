@@ -21,6 +21,7 @@ export interface Post {
   read_time: string;
   related_slugs: string[];
   published: boolean;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
   post_sections?: PostSection[];
@@ -36,6 +37,24 @@ export async function getPublishedPosts(supabase: SupabaseClient): Promise<Post[
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
+}
+
+export const RESOURCES_PAGE_SIZE = 12;
+
+export async function getPublishedPostsPaginated(
+  supabase: SupabaseClient,
+  page: number
+): Promise<{ posts: Post[]; total: number }> {
+  const from = (page - 1) * RESOURCES_PAGE_SIZE;
+  const to = from + RESOURCES_PAGE_SIZE - 1;
+  const { data, error, count } = await supabase
+    .from("posts")
+    .select("*", { count: "exact" })
+    .eq("published", true)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+  if (error) throw error;
+  return { posts: data ?? [], total: count ?? 0 };
 }
 
 export async function getPostBySlug(supabase: SupabaseClient, slug: string): Promise<Post | null> {

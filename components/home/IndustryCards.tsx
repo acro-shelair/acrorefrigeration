@@ -2,10 +2,21 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import ScrollReveal from "@/components/ScrollReveal";
 import { industriesHomeSection } from "@/data/industries";
 import { getIcon } from "@/app/admin/services/icons";
 import type { Industry } from "@/lib/supabase/content";
+
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+};
 
 const IndustryCards = ({ industries }: { industries: Industry[] }) => (
   <section className="section-padding bg-secondary">
@@ -18,11 +29,17 @@ const IndustryCards = ({ industries }: { industries: Industry[] }) => (
           {industriesHomeSection.subheading}
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {industries.map((ind, i) => {
+      <motion.div
+        className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+        variants={gridVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
+      >
+        {industries.map((ind) => {
           const Icon = getIcon(ind.icon_name);
           return (
-            <ScrollReveal key={ind.id} delay={i * 80}>
+            <motion.div key={ind.id} variants={cardVariants}>
               <Link
                 href={`/industries/${ind.slug}`}
                 className="block bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 group h-full overflow-hidden"
@@ -47,10 +64,10 @@ const IndustryCards = ({ industries }: { industries: Industry[] }) => (
                   </span>
                 </div>
               </Link>
-            </ScrollReveal>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </div>
   </section>
 );

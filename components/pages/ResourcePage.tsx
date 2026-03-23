@@ -109,6 +109,21 @@ const ResourcePage = ({
                 {post.description}
               </p>
             </motion.div>
+
+            {post.image_url && (
+              <motion.div
+                className="mt-10 rounded-xl overflow-hidden shadow-lg"
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+              >
+                <img
+                  src={post.image_url}
+                  alt={post.title}
+                  className="w-full h-64 md:h-96 object-cover"
+                />
+              </motion.div>
+            )}
           </div>
         </div>
       </section>
