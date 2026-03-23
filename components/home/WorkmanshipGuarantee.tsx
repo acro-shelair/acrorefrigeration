@@ -12,7 +12,7 @@ const WorkmanshipGuarantee = () => {
 
   return (
     <section
-      className="py-12 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 bg-background"
+      className="py-12 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8 bg-secondary"
       aria-label="5-Year Workmanship Guarantee by Acro Refrigeration"
     >
       <div className="container-narrow">

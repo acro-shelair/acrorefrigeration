@@ -10,11 +10,11 @@ const CTABanner = () => (
   <section className="section-padding">
     <div className="container-narrow">
       <ScrollReveal>
-        <div className="gradient-cta rounded-2xl md:rounded-3xl p-6 sm:p-10 md:p-16 text-center text-primary-foreground hover-lift">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4">
+        <div className="gradient-cta rounded-2xl md:rounded-3xl p-8 sm:p-12 md:p-16 text-center text-primary-foreground">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 tracking-tight">
             {ctaBanner.heading}
           </h2>
-          <p className="text-primary-foreground/80 text-lg max-w-xl mx-auto mb-8">
+          <p className="text-primary-foreground/75 text-lg max-w-xl mx-auto mb-10">
             {ctaBanner.subheading}
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
@@ -22,7 +22,7 @@ const CTABanner = () => (
               asChild
               size="lg"
               variant="secondary"
-              className="text-base px-8 font-semibold hover-scale w-full sm:w-auto"
+              className="text-base px-8 font-semibold w-full sm:w-auto cursor-pointer"
             >
               <Link href={ctaBanner.primaryCta.href}>
                 {ctaBanner.primaryCta.label} <ArrowRight className="w-4 h-4 ml-2" />
@@ -32,7 +32,7 @@ const CTABanner = () => (
               asChild
               size="lg"
               variant="outline"
-              className="text-base px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground hover-scale w-full sm:w-auto"
+              className="text-base px-8 bg-transparent border-primary-foreground/35 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground w-full sm:w-auto cursor-pointer"
             >
               <a href={`tel:${ctaBanner.secondaryCta.phone}`}>
                 <Phone className="w-4 h-4 mr-2" /> {ctaBanner.secondaryCta.label}

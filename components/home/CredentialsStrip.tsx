@@ -42,16 +42,16 @@ const credentials = [
 ];
 
 const CredentialsStrip = () => (
-  <section className="bg-secondary pt-5 pb-28 px-6">
+  <section className="bg-background py-10 px-6">
     <div className="container-narrow">
-      <p className="text-center text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-5">
+      <p className="text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-7">
         Licensed &amp; Certified
       </p>
-      <div className="grid grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-6">
+      <div className="grid grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-7">
         {credentials.map((c, i) => (
           <ScrollReveal key={c.label} delay={i * 60}>
             <div className="flex flex-col items-center gap-2.5 text-center">
-              <div className="w-14 h-14 rounded-xl bg-background/60 flex items-center justify-center overflow-hidden">
+              <div className="w-14 h-14 rounded-xl bg-background border border-border flex items-center justify-center overflow-hidden">
                 <Image
                   src={c.logo}
                   alt={c.alt}

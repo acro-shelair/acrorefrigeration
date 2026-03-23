@@ -17,23 +17,23 @@ import { motion, Variants } from "framer-motion";
 import type { Project } from "@/lib/supabase/content";
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
 };
 
 const cardVariant: Variants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 32 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut", delay: i * 0.1 },
+    transition: { duration: 0.45, ease: "easeOut", delay: i * 0.1 },
   }),
 };
 
 const ProjectPage = ({ project, related }: { project: Project; related: Project[] }) => (
   <Layout>
     {/* Breadcrumb */}
-    <section className="bg-secondary px-6 py-4">
+    <section className="bg-secondary px-6 py-4 border-b border-border">
       <div className="container-narrow">
         <Breadcrumb>
           <BreadcrumbList>
@@ -56,21 +56,15 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
     {/* Hero */}
     <section className="section-padding bg-background">
       <div className="container-narrow">
-        <motion.div
-          className="max-w-3xl"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
+        <motion.div className="max-w-3xl" variants={fadeUp} initial="hidden" animate="visible">
+          <span className="inline-block text-xs font-bold uppercase tracking-widest text-primary border border-primary/35 bg-primary/5 px-3 py-1.5 rounded mb-4">
             {project.type}
-          </div>
+          </span>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6">{project.title}</h1>
-          <p className="text-lg text-muted-foreground mb-8">{project.description}</p>
+          <p className="text-lg text-muted-foreground mb-6">{project.description}</p>
 
-          {/* Meta chips */}
-          <div className="flex flex-wrap gap-4 mb-8">
+          {/* Meta */}
+          <div className="flex flex-wrap gap-5 mb-8">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4 text-primary" /> {project.location}
             </div>
@@ -83,12 +77,12 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg">
+            <Button asChild size="lg" className="cursor-pointer">
               <Link href="/contact">
                 Discuss a Similar Project <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="destructive" className="gradient-cta border-0">
+            <Button asChild size="lg" variant="destructive" className="gradient-cta border-0 cursor-pointer">
               <a href="tel:1300227600">
                 <Phone className="w-4 h-4 mr-2" /> 1300 227 600
               </a>
@@ -99,7 +93,7 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
         {/* Hero image */}
         {project.image_url && (
           <motion.div
-            className="mt-12 rounded-2xl overflow-hidden"
+            className="mt-12 rounded-xl overflow-hidden shadow-lg"
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
@@ -141,10 +135,10 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
         <div className="container-narrow max-w-3xl">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <h2 className="text-3xl font-extrabold mb-8">Results & Outcomes</h2>
-            <div className="bg-card rounded-2xl border border-border p-8 space-y-4">
+            <div className="bg-card rounded-xl border border-border p-7 space-y-4">
               {project.outcomes.map((outcome, i) => (
                 <div key={i} className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <CheckCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <span className="text-sm leading-relaxed">{outcome}</span>
                 </div>
               ))}
@@ -158,16 +152,10 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
     {related.length > 0 && (
       <section className="section-padding bg-secondary">
         <div className="container-narrow">
-          <motion.div
-            className="mb-12"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
+          <motion.div className="mb-10" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <h2 className="text-3xl font-extrabold">More Projects</h2>
           </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-5">
             {related.map((p, i) => (
               <motion.div
                 key={p.id}
@@ -176,25 +164,23 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.1 }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
               >
                 <Link
                   href={`/projects/${p.slug}`}
-                  className="block bg-card rounded-2xl border border-border shadow-sm overflow-hidden group h-full"
+                  className="block bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 overflow-hidden group h-full"
                 >
-                  <div className="h-1.5 w-full bg-primary/80" />
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
                         {p.type}
                       </span>
                       <span className="text-xs text-muted-foreground">{p.size}</span>
                     </div>
-                    <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
+                    <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors duration-200">
                       {p.title}
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed mb-4">{p.description}</p>
-                    <span className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <span className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
                       View Project <ArrowRight className="w-4 h-4" />
                     </span>
                   </div>
