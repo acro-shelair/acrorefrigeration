@@ -59,8 +59,18 @@ const Industries = ({ industries }: { industries: Industry[] }) => (
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{ duration: 0.55, ease: "easeOut" }}
-                className="grid lg:grid-cols-2 gap-8 items-center bg-card rounded-xl border border-border p-8 md:p-10"
+                className="bg-card rounded-xl border border-border overflow-hidden"
               >
+                {ind.image_url && (
+                  <div className="w-full h-56 overflow-hidden">
+                    <img
+                      src={ind.image_url}
+                      alt={ind.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="grid lg:grid-cols-2 gap-8 items-center p-8 md:p-10">
                 <div>
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
                     <Icon className="w-5 h-5 text-primary" />
@@ -92,6 +102,7 @@ const Industries = ({ industries }: { industries: Industry[] }) => (
                     </motion.div>
                   ))}
                 </motion.div>
+                </div>
               </motion.div>
             );
           })}

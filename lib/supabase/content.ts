@@ -77,6 +77,7 @@ export interface Industry {
   industry_services: IndustryService[];
   case_study: IndustryCaseStudy | null;
   related_industry_slugs: string[];
+  image_url: string | null;
 }
 
 export async function getAllIndustries(supabase: SupabaseClient): Promise<Industry[]> {

@@ -73,6 +73,22 @@ const IndustryPage = ({
               </Button>
             </div>
           </motion.div>
+
+          {industry.image_url && (
+            <motion.div
+              className="mt-12 rounded-xl overflow-hidden shadow-lg"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <img
+                src={industry.image_url}
+                alt={industry.title}
+                className="w-full h-72 md:h-96 object-cover"
+              />
+            </motion.div>
+          )}
         </div>
       </section>
 

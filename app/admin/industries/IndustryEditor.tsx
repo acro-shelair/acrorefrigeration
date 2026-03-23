@@ -16,7 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle, Trash2, Upload, X, ImageIcon } from "lucide-react";
+import { convertToWebp } from "@/lib/convertToWebp";
 
 function toSlug(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -50,6 +51,8 @@ export default function IndustryEditor({ industry, nextPosition }: { industry?: 
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>(industry?.image_url ?? "");
   const isEdit = !!industry;
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormData>({
@@ -84,6 +87,28 @@ export default function IndustryEditor({ industry, nextPosition }: { industry?: 
   const challenges = useFieldArray({ control, name: "challenges" });
   const services   = useFieldArray({ control, name: "industry_services" });
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const converted = await convertToWebp(file);
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+      const { error: uploadError } = await supabase.storage
+        .from("project-images")
+        .upload(path, converted, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from("project-images").getPublicUrl(path);
+      setImageUrl(data.publicUrl);
+    } catch (e: unknown) {
+      setServerError(e instanceof Error ? e.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     setSaving(true);
     setServerError(null);
@@ -105,6 +130,7 @@ export default function IndustryEditor({ industry, nextPosition }: { industry?: 
       stats:             data.stats,
       challenges:        data.challenges,
       industry_services: data.industry_services,
+      image_url: imageUrl || null,
       case_study: hasCaseStudy ? {
         company:   data.case_study_company,
         challenge: data.case_study_challenge,
@@ -139,7 +165,7 @@ export default function IndustryEditor({ industry, nextPosition }: { industry?: 
         <h1 className="text-2xl font-bold">{isEdit ? "Edit Industry" : "New Industry"}</h1>
         <div className="flex items-center gap-3">
           <Button type="button" variant="outline" onClick={() => router.back()} disabled={saving}>Cancel</Button>
-          <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save Industry"}</Button>
+          <Button type="submit" disabled={saving || uploading}>{saving ? "Saving…" : uploading ? "Uploading…" : "Save Industry"}</Button>
         </div>
       </div>
 
@@ -221,6 +247,43 @@ export default function IndustryEditor({ industry, nextPosition }: { industry?: 
               </div>
             ))}
           </div>
+        </div>
+        {/* Image */}
+        <div className="space-y-3">
+          <Label>Cover Image <span className="text-muted-foreground font-normal text-xs">(optional — shown on the industries listing page)</span></Label>
+          {imageUrl ? (
+            <div className="relative w-full rounded-xl overflow-hidden border border-border">
+              <img src={imageUrl} alt="Industry" className="w-full h-48 object-cover" />
+              <button
+                type="button"
+                onClick={() => setImageUrl("")}
+                className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <label className={`flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
+              {uploading ? (
+                <span className="text-sm text-muted-foreground">Uploading…</span>
+              ) : (
+                <>
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Upload className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-medium">Click to upload image</span>
+                  <span className="text-xs text-muted-foreground">JPG, PNG, WebP — converted to WebP</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                disabled={uploading}
+                onChange={handleImageUpload}
+              />
+            </label>
+          )}
         </div>
       </section>
 

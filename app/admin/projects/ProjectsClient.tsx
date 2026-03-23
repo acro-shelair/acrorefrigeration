@@ -17,6 +17,23 @@ export default function ProjectsClient({ initialProjects }: { initialProjects: P
   const deleteProject = async (project: Project) => {
     if (!confirm(`Delete "${project.title}"? This cannot be undone.`)) return;
     const supabase = createClient();
+
+    // Delete images from storage
+    const allUrls = Array.from(new Set([
+      ...(project.images ?? []),
+      ...(project.image_url ? [project.image_url] : []),
+    ]));
+    const storagePaths = allUrls
+      .map((url) => {
+        const marker = "/project-images/";
+        const idx = url.indexOf(marker);
+        return idx !== -1 ? url.slice(idx + marker.length) : null;
+      })
+      .filter(Boolean) as string[];
+    if (storagePaths.length > 0) {
+      await supabase.storage.from("project-images").remove(storagePaths);
+    }
+
     await supabase.from("projects").delete().eq("id", project.id);
     await logActivity("delete", "projects", `Deleted project: ${project.title}`);
     setProjects((prev) => prev.filter((p) => p.id !== project.id));
