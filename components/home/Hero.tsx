@@ -156,8 +156,11 @@ const Hero = () => {
             <motion.div
               className="absolute -top-5 -right-6 gradient-cta text-primary-foreground rounded-xl px-4 py-3 shadow-xl"
               initial={{ opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0, duration: 0.45 }}
+              animate={{ opacity: 1, y: [0, -5, 0, 5, 0] }}
+              transition={{
+                opacity: { delay: 1.0, duration: 0.45 },
+                y: { delay: 1.5, duration: 4, repeat: Infinity, ease: "easeInOut" },
+              }}
             >
               <div className="text-sm font-bold">HACCP Certified</div>
               <div className="text-xs opacity-75">Compliant Systems</div>
@@ -187,8 +190,11 @@ const Hero = () => {
             <motion.div
               className="absolute -bottom-6 -right-8 bg-background border border-border rounded-xl px-5 py-4 shadow-xl"
               initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.85, duration: 0.45 }}
+              animate={{ opacity: 1, y: [0, 5, 0, -5, 0] }}
+              transition={{
+                opacity: { delay: 0.85, duration: 0.45 },
+                y: { delay: 1.5, duration: 4, repeat: Infinity, ease: "easeInOut" },
+              }}
             >
               <div className="text-3xl font-extrabold text-primary leading-none">
                 50+
