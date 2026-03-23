@@ -58,6 +58,16 @@ const ProjectsSection = ({ projects }: { projects: Project[] }) => {
                 href={`/projects/${p.slug}`}
                 className="block bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 overflow-hidden group h-full"
               >
+                {/* Cover image */}
+                {p.image_url && (
+                  <div className="relative w-full h-44 overflow-hidden bg-muted">
+                    <img
+                      src={p.image_url}
+                      alt={p.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                )}
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">

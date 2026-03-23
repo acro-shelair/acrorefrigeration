@@ -306,6 +306,7 @@ export interface Project {
   solution: string;
   outcomes: string[];
   image_url: string | null;
+  images: string[];
   featured: boolean;
   position: number;
 }

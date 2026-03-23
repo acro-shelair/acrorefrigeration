@@ -5,6 +5,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, CheckCircle, MapPin, Users, Briefcase } from "lucide-react";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
@@ -90,22 +97,55 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
           </div>
         </motion.div>
 
-        {/* Hero image */}
-        {project.image_url && (
-          <motion.div
-            className="mt-12 rounded-xl overflow-hidden shadow-lg"
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <img
-              src={project.image_url}
-              alt={project.title}
-              className="w-full h-72 md:h-96 object-cover"
-            />
-          </motion.div>
-        )}
+        {/* Image carousel */}
+        {(() => {
+          const allImages = Array.from(new Set([
+            ...(project.images ?? []),
+            ...(project.image_url ? [project.image_url] : []),
+          ]));
+          if (allImages.length === 0) return null;
+          if (allImages.length === 1) return (
+            <motion.div
+              className="mt-12 rounded-xl overflow-hidden shadow-lg"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <img src={allImages[0]} alt={project.title} className="w-full h-72 md:h-96 object-cover" />
+            </motion.div>
+          );
+          return (
+            <motion.div
+              className="mt-12"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              <Carousel opts={{ loop: true }} className="w-full">
+                <CarouselContent>
+                  {allImages.map((src, i) => (
+                    <CarouselItem key={i}>
+                      <div className="rounded-xl overflow-hidden shadow-lg">
+                        <img
+                          src={src}
+                          alt={`${project.title} — image ${i + 1}`}
+                          className="w-full h-72 md:h-96 object-cover"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-3" />
+                <CarouselNext className="right-3" />
+              </Carousel>
+              <p className="text-center text-xs text-muted-foreground mt-3">
+                {allImages.length} photos
+              </p>
+            </motion.div>
+          );
+        })()}
       </div>
     </section>
 

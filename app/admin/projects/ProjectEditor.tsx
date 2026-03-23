@@ -8,6 +8,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import type { Project } from "@/lib/supabase/content";
 import { logActivity } from "@/lib/supabase/logging";
+import { convertToWebp } from "@/lib/convertToWebp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +30,6 @@ const schema = z.object({
   challenge: z.string().min(1, "Required"),
   solution:  z.string().min(1, "Required"),
   outcomes:  z.array(z.object({ text: z.string() })),
-  image_url: z.string(),
   featured:  z.boolean(),
   position:  z.coerce.number().int().min(0),
 });
@@ -47,10 +47,16 @@ export default function ProjectEditor({
   const [saving, setSaving] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>(project?.image_url ?? "");
+  const [images, setImages] = useState<string[]>(() => {
+    const arr = project?.images ?? [];
+    if (project?.image_url && !arr.includes(project.image_url)) {
+      return [project.image_url, ...arr];
+    }
+    return arr;
+  });
   const isEdit = !!project;
 
-  const { register, handleSubmit, control, setValue, watch, formState: { errors } } =
+  const { register, handleSubmit, control, setValue, formState: { errors } } =
     useForm<FormData>({
       resolver: zodResolver(schema),
       defaultValues: {
@@ -64,7 +70,6 @@ export default function ProjectEditor({
         challenge: project?.challenge ?? "",
         solution:  project?.solution  ?? "",
         outcomes:  (project?.outcomes ?? []).map((t) => ({ text: t })),
-        image_url: project?.image_url ?? "",
         featured:  project?.featured  ?? false,
         position:  project?.position  ?? nextPosition ?? 0,
       },
@@ -73,20 +78,23 @@ export default function ProjectEditor({
   const outcomes = useFieldArray({ control, name: "outcomes" });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
     setUploading(true);
     try {
       const supabase = createClient();
-      const ext = file.name.split(".").pop();
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("project-images")
-        .upload(path, file, { upsert: true });
-      if (uploadError) throw uploadError;
-      const { data } = supabase.storage.from("project-images").getPublicUrl(path);
-      setImageUrl(data.publicUrl);
-      setValue("image_url", data.publicUrl);
+      const urls: string[] = [];
+      for (const raw of files) {
+        const file = await convertToWebp(raw);
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+        const { error: uploadError } = await supabase.storage
+          .from("project-images")
+          .upload(path, file, { upsert: true });
+        if (uploadError) throw uploadError;
+        const { data } = supabase.storage.from("project-images").getPublicUrl(path);
+        urls.push(data.publicUrl);
+      }
+      setImages((prev) => [...prev, ...urls]);
     } catch (e: unknown) {
       setServerError(e instanceof Error ? e.message : "Upload failed.");
     } finally {
@@ -95,9 +103,17 @@ export default function ProjectEditor({
     }
   };
 
-  const removeImage = () => {
-    setImageUrl("");
-    setValue("image_url", "");
+  const removeImage = (url: string) => {
+    setImages((prev) => prev.filter((u) => u !== url));
+  };
+
+  const moveImage = (from: number, to: number) => {
+    setImages((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return next;
+    });
   };
 
   const onSubmit = async (data: FormData) => {
@@ -115,7 +131,8 @@ export default function ProjectEditor({
       challenge: data.challenge,
       solution:  data.solution,
       outcomes:  data.outcomes.map((o) => o.text).filter(Boolean),
-      image_url: data.image_url || null,
+      images:    images,
+      image_url: images[0] ?? null,
       featured:  data.featured,
       position:  data.position,
     };
@@ -245,42 +262,87 @@ export default function ProjectEditor({
       <section className="space-y-5">
         <h2 className="text-base font-semibold border-b border-border pb-2">Settings</h2>
         <div className="grid md:grid-cols-2 gap-5">
-          <div className="space-y-1.5 md:col-span-2">
-            <Label>Project Image <span className="text-muted-foreground font-normal text-xs">(optional)</span></Label>
-            <input type="hidden" {...register("image_url")} />
-            {imageUrl ? (
-              <div className="relative w-full rounded-xl overflow-hidden border border-border group">
-                <img src={imageUrl} alt="Project" className="w-full h-48 object-cover" />
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 text-white hover:bg-black/80 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <label className={`flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
-                {uploading ? (
-                  <span className="text-sm text-muted-foreground">Uploading…</span>
-                ) : (
-                  <>
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <ImageIcon className="w-5 h-5 text-primary" />
+          <div className="space-y-3 md:col-span-2">
+            <div className="flex items-center justify-between">
+              <Label>
+                Project Images
+                <span className="text-muted-foreground font-normal text-xs ml-2">(optional — first image is the cover)</span>
+              </Label>
+              {images.length > 0 && (
+                <span className="text-xs text-muted-foreground">{images.length} photo{images.length !== 1 ? "s" : ""}</span>
+              )}
+            </div>
+
+            {/* Existing images grid */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {images.map((url, i) => (
+                  <div key={url} className="relative group rounded-xl overflow-hidden border border-border aspect-video bg-muted">
+                    <img src={url} alt={`Image ${i + 1}`} className="w-full h-full object-cover" />
+                    {/* Cover badge */}
+                    {i === 0 && (
+                      <span className="absolute bottom-1.5 left-1.5 text-[10px] font-bold bg-black/70 text-white px-1.5 py-0.5 rounded">
+                        Cover
+                      </span>
+                    )}
+                    {/* Actions */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                      {i > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(i, i - 1)}
+                          className="p-1.5 rounded-lg bg-white/20 hover:bg-white/40 text-white text-xs font-bold"
+                          title="Move left"
+                        >
+                          ←
+                        </button>
+                      )}
+                      {i < images.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(i, i + 1)}
+                          className="p-1.5 rounded-lg bg-white/20 hover:bg-white/40 text-white text-xs font-bold"
+                          title="Move right"
+                        >
+                          →
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeImage(url)}
+                        className="p-1.5 rounded-lg bg-black/60 hover:bg-red-600 text-white transition-colors"
+                        title="Remove"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    <span className="text-sm font-medium">Click to upload image</span>
-                    <span className="text-xs text-muted-foreground">JPG, PNG, WebP — max 5MB</span>
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  disabled={uploading}
-                  onChange={handleImageUpload}
-                />
-              </label>
+                  </div>
+                ))}
+              </div>
             )}
+
+            {/* Upload dropzone */}
+            <label className={`flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors ${uploading ? "opacity-60 pointer-events-none" : ""}`}>
+              {uploading ? (
+                <span className="text-sm text-muted-foreground">Uploading…</span>
+              ) : (
+                <>
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Upload className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-medium">Click to upload photos</span>
+                  <span className="text-xs text-muted-foreground">Select multiple — JPG, PNG, WebP</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="hidden"
+                disabled={uploading}
+                onChange={handleImageUpload}
+              />
+            </label>
           </div>
           <div className="space-y-1.5 max-w-[120px]">
             <Label>Position</Label>
