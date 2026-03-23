@@ -291,6 +291,54 @@ export async function getAllPricingTiers(supabase: SupabaseClient): Promise<Pric
   return data ?? [];
 }
 
+// ── Projects ──────────────────────────────────────────────────────────────────
+
+export interface Project {
+  id: string;
+  slug: string;
+  title: string;
+  type: string;
+  size: string;
+  description: string;
+  location: string;
+  client: string;
+  challenge: string;
+  solution: string;
+  outcomes: string[];
+  image_url: string | null;
+  featured: boolean;
+  position: number;
+}
+
+export async function getAllProjects(supabase: SupabaseClient): Promise<Project[]> {
+  const { data, error } = await supabase.from("projects").select("*").order("position");
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getFeaturedProjects(supabase: SupabaseClient): Promise<Project[]> {
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("featured", true)
+    .order("position")
+    .limit(3);
+  if (error) return [];
+  return data ?? [];
+}
+
+export async function getProjectById(supabase: SupabaseClient, id: string): Promise<Project | null> {
+  const { data, error } = await supabase.from("projects").select("*").eq("id", id).single();
+  if (error) return null;
+  return data;
+}
+
+export async function getProjectBySlug(supabase: SupabaseClient, slug: string): Promise<Project | null> {
+  const { data, error } = await supabase.from("projects").select("*").eq("slug", slug).single();
+  if (error) return null;
+  return data;
+}
+
 // ── Service slugs ─────────────────────────────────────────────────────────────
 
 export async function getPublishedServiceSlugs(supabase: SupabaseClient): Promise<string[]> {

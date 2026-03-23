@@ -1,13 +1,14 @@
 "use client";
 
 import Layout from "@/components/Layout";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CTABanner from "@/components/home/CTABanner";
 import heroImg from "@/assets/hero-coldroom.jpg";
 import { motion, Variants } from "framer-motion";
-import { projects, projectsPage } from "@/data/projects";
+import { projectsPage } from "@/data/projects";
+import type { Project } from "@/lib/supabase/content";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -23,9 +24,8 @@ const cardVariant: Variants = {
   }),
 };
 
-const Projects = () => (
+const Projects = ({ projects }: { projects: Project[] }) => (
   <Layout>
-    
     <section className="section-padding bg-background">
       <div className="container-narrow">
         <motion.div
@@ -43,10 +43,7 @@ const Projects = () => (
           >
             {projectsPage.badge}
           </motion.div>
-          <motion.h1
-            variants={fadeUp}
-            className="text-4xl md:text-5xl font-extrabold mb-6"
-          >
+          <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl font-extrabold mb-6">
             {projectsPage.heading}
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-muted-foreground">
@@ -57,36 +54,41 @@ const Projects = () => (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((p, i) => (
             <motion.div
-              key={p.title}
+              key={p.id}
               custom={i}
               variants={cardVariant}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.1 }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden group"
             >
-              <div className="h-48 overflow-hidden">
-                <img
-                  src={heroImg.src}
-                  alt={p.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
-                    {p.type}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {p.size}
+              <Link
+                href={`/projects/${p.slug}`}
+                className="block bg-card rounded-2xl border border-border shadow-sm overflow-hidden group h-full"
+              >
+                <div className="h-48 overflow-hidden">
+                  <img
+                    src={p.image_url ?? heroImg.src}
+                    alt={p.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
+                      {p.type}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{p.size}</span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
+                    {p.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">{p.description}</p>
+                  <span className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                    View Case Study <ArrowRight className="w-4 h-4" />
                   </span>
                 </div>
-                <h3 className="font-bold text-lg mb-2">{p.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {p.desc}
-                </p>
-              </div>
+              </Link>
             </motion.div>
           ))}
         </div>

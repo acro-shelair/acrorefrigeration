@@ -1,11 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAllProjects } from "@/lib/supabase/content";
-import ProjectsClient from "./ProjectsClient";
+import ProjectEditor from "../ProjectEditor";
 
-export const dynamic = "force-dynamic";
-
-export default async function AdminProjectsPage() {
+export default async function NewProjectPage() {
   const supabase = await createClient();
   const projects = await getAllProjects(supabase).catch(() => []);
-  return <ProjectsClient initialProjects={projects} />;
+  return <ProjectEditor nextPosition={projects.length} />;
 }

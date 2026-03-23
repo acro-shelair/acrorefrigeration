@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getAllProjects } from "@/lib/supabase/content";
+import { withRetry } from "@/lib/retry";
 import Projects from "@/components/pages/Projects";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Featured Projects",
@@ -9,6 +14,8 @@ export const metadata: Metadata = {
   openGraph: { url: "https://acrorefrigeration.com.au/projects", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
 };
 
-export default function ProjectsPage() {
-  return <Projects />;
+export default async function ProjectsPage() {
+  const supabase = createAdminClient();
+  const projects = await withRetry(() => getAllProjects(supabase)).catch(() => []);
+  return <Projects projects={projects} />;
 }

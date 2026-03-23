@@ -4,21 +4,18 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone, ChevronDown, MapPin, Wrench, Building2, Tag } from "lucide-react";
+import { Menu, X, Phone, ChevronDown, MapPin, Wrench, Building2, Tag, LayoutGrid, Briefcase, BookOpen, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import acroLogo from "@/assets/acro-logo.png";
 
-type DropdownKey = "services" | "industries" | "brands" | "locations";
-type MenuItem = { label: string; href: string; topLink?: true };
+type DropdownKey = "services" | "industries" | "brands" | "locations" | "more";
+type MenuItem = { label: string; href: string; topLink?: true; icon?: React.ReactNode };
 type DynamicItem = { slug: string; title: string };
 
-// All dropdowns are now dynamic — no static menus needed
-const staticMenus: Record<string, MenuItem[]> = {};
-
-const plainLinks = [
-  { label: "Pricing",   href: "/pricing" },
-  { label: "Resources", href: "/resources" },
-  { label: "Contact",   href: "/contact" },
+const moreMenu: MenuItem[] = [
+  { label: "Projects",  href: "/projects",  topLink: true, icon: <Briefcase  className="w-3.5 h-3.5 text-primary shrink-0" /> },
+  { label: "Resources", href: "/resources", topLink: true, icon: <BookOpen   className="w-3.5 h-3.5 text-primary shrink-0" /> },
+  { label: "Pricing",   href: "/pricing",   topLink: true, icon: <DollarSign className="w-3.5 h-3.5 text-primary shrink-0" /> },
 ];
 
 const dropdownKeys: { key: DropdownKey; label: string }[] = [
@@ -26,17 +23,20 @@ const dropdownKeys: { key: DropdownKey; label: string }[] = [
   { key: "industries", label: "Industries" },
   { key: "brands",     label: "Brands" },
   { key: "locations",  label: "Locations" },
+  { key: "more",       label: "More" },
 ];
 
 const topIcon: Record<DropdownKey, React.ReactNode> = {
-  services:   <Wrench   className="w-3.5 h-3.5 text-primary shrink-0" />,
+  services:   <Wrench    className="w-3.5 h-3.5 text-primary shrink-0" />,
   industries: <Building2 className="w-3.5 h-3.5 text-primary shrink-0" />,
-  brands:     <Tag      className="w-3.5 h-3.5 text-primary shrink-0" />,
-  locations:  <MapPin   className="w-3.5 h-3.5 text-primary shrink-0" />,
+  brands:     <Tag       className="w-3.5 h-3.5 text-primary shrink-0" />,
+  locations:  <MapPin    className="w-3.5 h-3.5 text-primary shrink-0" />,
+  more:       <LayoutGrid className="w-3.5 h-3.5 text-primary shrink-0" />,
 };
 
+const morePaths = ["/projects", "/resources", "/pricing"];
+
 function formatPhone(raw: string) {
-  // e.g. "1300227600" → "1300 227 600", "0412345678" → "0412 345 678"
   return raw.replace(/(\d{4})(\d{3})(\d{3})/, "$1 $2 $3");
 }
 
@@ -84,7 +84,8 @@ const Navbar = ({
     if (key === "industries") return industryMenu;
     if (key === "brands")     return brandMenu;
     if (key === "locations")  return locationMenu;
-    return staticMenus[key];
+    if (key === "more")       return moreMenu;
+    return [];
   };
 
   useEffect(() => {
@@ -102,7 +103,11 @@ const Navbar = ({
     setMobileOpen(false);
   }, [pathname]);
 
-  const isActive = (key: DropdownKey) => pathname.startsWith(`/${key === "services" ? "services" : key === "industries" ? "industries" : key === "brands" ? "brands" : "locations"}`);
+  const isActive = (key: DropdownKey) => {
+    if (key === "more") return morePaths.some((p) => pathname.startsWith(p));
+    const prefix = `/${key === "services" ? "services" : key === "industries" ? "industries" : key === "brands" ? "brands" : "locations"}`;
+    return pathname.startsWith(prefix);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
@@ -125,7 +130,7 @@ const Navbar = ({
               </button>
 
               {activeDropdown === key && (
-                <div className="absolute top-full left-0 mt-1.5 w-56 bg-background border border-border rounded-xl shadow-lg py-1.5 z-50">
+                <div className="absolute top-full left-0 mt-1.5 w-52 bg-background border border-border rounded-xl shadow-lg py-1.5 z-50">
                   {getMenu(key).map((item, i) => (
                     <div key={item.href}>
                       {item.topLink && i > 0 && <div className="mx-3 my-1 border-t border-border" />}
@@ -133,7 +138,7 @@ const Navbar = ({
                         href={item.href}
                         className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors hover:bg-secondary ${item.topLink ? "font-medium" : ""} ${pathname === item.href ? "text-foreground" : "text-muted-foreground"}`}
                       >
-                        {item.topLink && topIcon[key]}
+                        {item.topLink && (item.icon ?? topIcon[key])}
                         {item.label}
                       </Link>
                     </div>
@@ -143,15 +148,13 @@ const Navbar = ({
             </div>
           ))}
 
-          {plainLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-secondary ${pathname === link.href ? "text-foreground bg-secondary" : "text-muted-foreground"}`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {/* Contact — sole plain link */}
+          <Link
+            href="/contact"
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors hover:bg-secondary ${pathname === "/contact" ? "text-foreground bg-secondary" : "text-muted-foreground"}`}
+          >
+            Contact
+          </Link>
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
@@ -189,7 +192,7 @@ const Navbar = ({
                         onClick={() => setMobileOpen(false)}
                         className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${item.topLink ? "font-medium" : ""} ${pathname === item.href ? "text-foreground" : "text-muted-foreground"}`}
                       >
-                        {item.topLink && topIcon[key]}
+                        {item.topLink && (item.icon ?? topIcon[key])}
                         {item.label}
                       </Link>
                     ))}
@@ -198,16 +201,13 @@ const Navbar = ({
               </div>
             ))}
 
-            {plainLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${pathname === link.href ? "text-foreground bg-secondary" : "text-muted-foreground"}`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            <Link
+              href="/contact"
+              onClick={() => setMobileOpen(false)}
+              className={`px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${pathname === "/contact" ? "text-foreground bg-secondary" : "text-muted-foreground"}`}
+            >
+              Contact
+            </Link>
           </nav>
 
           <div className="mt-4 flex flex-col gap-2">

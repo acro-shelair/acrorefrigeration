@@ -417,6 +417,17 @@ export const ctaBanner = {
   secondaryCta: { label: "Call 1300 227 600", phone: "1300227600" },
 };
 
+// ─── Projects Home Section ────────────────────────────────────────────────
+
+export const projectsHomeSection = {
+  badge: "Our Work",
+  heading: "Projects We're Proud Of",
+  subheading:
+    "From emergency repairs to large-scale cold room builds — here's a snapshot of what we've delivered for Australian businesses.",
+  viewMoreLabel: "View all projects",
+  viewMoreHref: "/projects",
+};
+
 // ─── FAQ Section ──────────────────────────────────────────────────────────────
 
 export interface FAQ {

@@ -54,11 +54,15 @@ const localBusinessSchema = {
 
 export default async function Home() {
   const supabase = createAdminClient();
-  const [{ data: faqs }, { data: testimonials }, { data: pricingTiersData }] = await Promise.all([
-    withRetry(() => supabase.from("faqs").select("*").order("position")),
-    withRetry(() => supabase.from("testimonials").select("*").order("position")),
-    withRetry(() => supabase.from("pricing_tiers").select("*").order("position")),
-  ]);
+  const [{ data: faqs }, { data: testimonials }, { data: pricingTiersData }, featuredProjects] =
+    await Promise.all([
+      withRetry(() => supabase.from("faqs").select("*").order("position")),
+      withRetry(() => supabase.from("testimonials").select("*").order("position")),
+      withRetry(() => supabase.from("pricing_tiers").select("*").order("position")),
+      withRetry(() =>
+        supabase.from("projects").select("*").eq("featured", true).order("position").limit(3)
+      ).then((r) => r.data ?? []).catch(() => []),
+    ]);
 
   const faqItems = faqs?.length
     ? faqs.map((f) => ({ q: f.question, a: f.answer }))
@@ -116,6 +120,7 @@ export default async function Home() {
         faqItems={faqItems}
         reviewItems={reviewItems}
         pricingTiers={pricingTiersData ?? []}
+        featuredProjects={featuredProjects}
       />
     </>
   );
