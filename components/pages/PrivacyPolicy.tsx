@@ -25,11 +25,13 @@ const PrivacyPolicy = ({ legalData }: Props) => {
                     {section.heading}
                   </h2>
                 )}
-                {section.body
-                  .split("\n\n")
-                  .map((para, pIdx) => (
-                    <p key={pIdx}>{para}</p>
-                  ))}
+                <div className="space-y-4">
+                  {section.body
+                    .split("\n\n")
+                    .map((para, pIdx) => (
+                      <p key={pIdx}>{para}</p>
+                    ))}
+                </div>
               </section>
             ))}
           </div>
