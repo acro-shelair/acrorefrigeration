@@ -94,6 +94,32 @@ export async function upsertUserProfile(
   await logActivity("update", "users", `Updated role/permissions for: ${userId}`);
 }
 
+export async function bulkSendPasswordReset() {
+  const supabase = createAdminClient();
+  const { data: { users }, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  if (listError) throw new Error(listError.message);
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const { createClient } = await import("@supabase/supabase-js");
+  const publicSupabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  let sent = 0;
+  let failed = 0;
+  for (const user of users) {
+    if (!user.email) continue;
+    const { error } = await publicSupabase.auth.resetPasswordForEmail(user.email, {
+      redirectTo: `${siteUrl}/auth/callback?next=/admin/set-password`,
+    });
+    if (error) { failed++; } else { sent++; }
+  }
+
+  await logActivity("update", "users", `Bulk password reset sent to ${sent} users (${failed} failed)`);
+  return { sent, failed, total: users.length };
+}
+
 export async function getUserProfiles() {
   // Use service role to read all profiles
   const supabase = createAdminClient();

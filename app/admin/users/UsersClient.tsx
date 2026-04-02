@@ -9,7 +9,7 @@ import type { User } from "@supabase/supabase-js";
 import {
   inviteUser, createUser, deleteUser, sendPasswordReset,
   updateUserEmail, updateUserPassword, setBanStatus,
-  confirmUserEmail, upsertUserProfile,
+  confirmUserEmail, upsertUserProfile, bulkSendPasswordReset,
 } from "./actions";
 import {
   PERMISSION_KEYS, PERMISSION_LABELS, PERMISSION_PRESETS,
@@ -209,6 +209,63 @@ function InviteDialog({ onSuccess }: { onSuccess: () => void }) {
             <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Sending…" : "Send Invite"}</Button>
           </div>
         </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─── Bulk reset dialog ───────────────────────────────────────────────────────
+
+function BulkResetDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [result, setResult] = useState<{ sent: number; failed: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSend = async () => {
+    setSending(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await bulkSendPasswordReset();
+      setResult(res);
+      onSuccess();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setResult(null); setError(null); } }}>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline"><KeyRound className="w-4 h-4 mr-1.5" /> Bulk Reset</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader><DialogTitle>Bulk Password Reset</DialogTitle></DialogHeader>
+        {!result ? (
+          <>
+            <p className="text-sm text-muted-foreground -mt-2">
+              This will send a password reset email to <strong>every user</strong>. Useful for migrated accounts that need to set a new password.
+            </p>
+            {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">{error}</p>}
+            <div className="flex gap-2 justify-end mt-2">
+              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button onClick={handleSend} disabled={sending}>{sending ? "Sending…" : "Send to All Users"}</Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground -mt-2">
+              Sent <strong>{result.sent}</strong> reset email{result.sent !== 1 ? "s" : ""} successfully.
+              {result.failed > 0 && <> <span className="text-destructive">{result.failed} failed.</span></>}
+            </p>
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={() => setOpen(false)}>Done</Button>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -426,6 +483,7 @@ export default function UsersClient({
           <p className="text-sm text-muted-foreground mt-0.5">Manage accounts and access permissions.</p>
         </div>
         <div className="flex items-center gap-2">
+          <BulkResetDialog onSuccess={refresh} />
           <InviteDialog onSuccess={refresh} />
           <CreateDialog onSuccess={refresh} />
         </div>

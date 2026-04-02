@@ -61,8 +61,10 @@ export async function middleware(request: NextRequest) {
       return redirect(dest);
     }
 
-    // No profile yet → treat as admin (first-time setup)
+    // No profile yet → treat as employee with no permissions
     if (!userProfile) {
+      const dest = getDefaultPage({ user_id: user.id, role: "employee", permissions: [] });
+      if (!isSetPasswordPath && pathname !== dest) return redirect(dest);
       return supabaseResponse;
     }
 

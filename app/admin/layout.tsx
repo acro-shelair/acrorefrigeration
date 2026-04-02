@@ -1,13 +1,19 @@
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import AdminSidebar from "./AdminSidebar";
 import type { UserProfile } from "@/lib/rbac";
 
 export const metadata = { title: "Admin | Acro Refrigeration" };
 
+const STANDALONE_PAGES = ["/admin/login", "/admin/set-password"];
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  const isStandalone = STANDALONE_PAGES.includes(pathname);
+
+  if (isStandalone) return <>{children}</>;
+
   const supabase = await createClient();
-  // getSession() reads from the cookie — no network round-trip.
-  // The middleware already validated the user on every request, so this is safe.
   const { data: { session } } = await supabase.auth.getSession();
   const user = session?.user;
 
@@ -19,10 +25,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq("user_id", user.id)
     .single();
 
-  // No profile = treat as admin (first-time setup)
   const userProfile = (profile as UserProfile | null) ?? {
     user_id: user.id,
-    role: "admin" as const,
+    role: "employee" as const,
     permissions: [],
   };
 
