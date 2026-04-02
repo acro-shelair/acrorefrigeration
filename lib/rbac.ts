@@ -21,21 +21,32 @@ export const PERMISSION_KEYS = [
 export type PermissionKey = (typeof PERMISSION_KEYS)[number];
 
 export const PERMISSION_LABELS: Record<PermissionKey, string> = {
-  posts:        "Posts",
-  services:     "Services",
-  industries:   "Industries",
-  brands:       "Brands",
-  projects:     "Projects",
+  posts: "Posts",
+  services: "Services",
+  industries: "Industries",
+  brands: "Brands",
+  projects: "Projects",
   testimonials: "Testimonials",
-  locations:    "Locations",
-  portal:       "Portal",
+  locations: "Locations",
+  portal: "Portal",
 };
 
 // Predefined permission sets
-export const PERMISSION_PRESETS: Record<string, { label: string; permissions: PermissionKey[] }> = {
+export const PERMISSION_PRESETS: Record<
+  string,
+  { label: string; permissions: PermissionKey[] }
+> = {
   content_editor: {
     label: "Content Editor",
-    permissions: ["posts", "services", "industries", "brands", "projects", "testimonials", "locations"],
+    permissions: [
+      "posts",
+      "services",
+      "industries",
+      "brands",
+      "projects",
+      "testimonials",
+      "locations",
+    ],
   },
   posts_only: {
     label: "Posts Only",
@@ -57,23 +68,24 @@ export const PERMISSION_PRESETS: Record<string, { label: string; permissions: Pe
 
 // Path → permission key mapping
 // "admin_only" = only admins, never assignable to employees
-export const PATH_PERMISSION_MAP: Record<string, PermissionKey | "admin_only"> = {
-  "/admin/home":         "admin_only",
-  "/admin/posts":        "posts",
-  "/admin/services":     "services",
-  "/admin/industries":   "industries",
-  "/admin/brands":       "brands",
-  "/admin/projects":     "projects",
-  "/admin/testimonials": "testimonials",
-  "/admin/locations":    "locations",
-  "/admin/users":        "admin_only",
-  "/admin/logs":         "admin_only",
-  "/admin/maintenance":  "admin_only",
-  "/admin/settings":     "admin_only",
-  "/admin/legal":        "admin_only",
-  "/admin/pricing":      "admin_only",
-  "/admin/faqs":         "admin_only",
-};
+export const PATH_PERMISSION_MAP: Record<string, PermissionKey | "admin_only"> =
+  {
+    "/admin/home": "admin_only",
+    "/admin/posts": "posts",
+    "/admin/services": "services",
+    "/admin/industries": "industries",
+    "/admin/brands": "brands",
+    "/admin/projects": "projects",
+    "/admin/testimonials": "testimonials",
+    "/admin/locations": "locations",
+    "/admin/users": "admin_only",
+    "/admin/logs": "admin_only",
+    "/admin/maintenance": "admin_only",
+    "/admin/settings": "admin_only",
+    "/admin/legal": "admin_only",
+    "/admin/pricing": "admin_only",
+    "/admin/faqs": "admin_only",
+  };
 
 /** Return the first admin path an employee is allowed to visit. */
 export function getDefaultPage(profile: UserProfile): string {
@@ -81,21 +93,21 @@ export function getDefaultPage(profile: UserProfile): string {
 
   // Order matches sidebar priority
   const permissionToPath: [PermissionKey, string][] = [
-    ["posts",        "/admin/posts"],
-    ["services",     "/admin/services"],
-    ["industries",   "/admin/industries"],
-    ["brands",       "/admin/brands"],
-    ["projects",     "/admin/projects"],
-    ["locations",    "/admin/locations"],
+    ["posts", "/admin/posts"],
+    ["services", "/admin/services"],
+    ["industries", "/admin/industries"],
+    ["brands", "/admin/brands"],
+    ["projects", "/admin/projects"],
+    ["locations", "/admin/locations"],
     ["testimonials", "/admin/testimonials"],
-    ["portal",       "/admin/portal"],
+    ["portal", "/admin/portal"],
   ];
 
   for (const [perm, path] of permissionToPath) {
     if (profile.permissions.includes(perm)) return path;
   }
 
-  return "/admin/profile";
+  return "/admin/portal";
 }
 
 export function canAccess(
