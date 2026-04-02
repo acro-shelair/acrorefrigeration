@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AuthCallbackPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/admin";
   const [error, setError] = useState(false);
@@ -34,10 +33,10 @@ export default function AuthCallbackPage() {
         if (error) {
           setError(true);
         } else {
-          router.replace(next);
+          window.location.href = next;
         }
       });
-  }, [next, router]);
+  }, [next]);
 
   if (error) {
     return (

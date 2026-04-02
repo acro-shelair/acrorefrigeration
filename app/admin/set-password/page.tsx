@@ -59,7 +59,7 @@ export default function SetPasswordPage() {
       return;
     }
     setStatus("success");
-    setTimeout(() => router.push("/admin"), 1500);
+    setTimeout(() => window.location.href = "/admin", 1500);
   };
 
   return (

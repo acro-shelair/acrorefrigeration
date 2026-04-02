@@ -53,7 +53,7 @@ export default async function RootLayout({
 }>) {
   const headersList = await headers();
   const pathname = headersList.get("x-pathname") ?? "";
-  const isAdmin = pathname.startsWith("/admin");
+  const isAdmin = pathname.startsWith("/admin") || pathname.startsWith("/auth");
 
   const supabase = createAdminClient();
   const [settings, navServices, navIndustries, navBrands, navCities] = isAdmin
