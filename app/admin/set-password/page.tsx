@@ -24,7 +24,9 @@ type FormData = z.infer<typeof schema>;
 
 export default function SetPasswordPage() {
   const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "ready" | "success" | "error">("loading");
+  const [status, setStatus] = useState<
+    "loading" | "ready" | "success" | "error"
+  >("loading");
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -34,19 +36,46 @@ export default function SetPasswordPage() {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
-    // Supabase puts the tokens in the URL hash for invite/recovery links.
-    // The client library auto-detects and exchanges them on init.
     const supabase = createClient();
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
+    let resolved = false;
+
+    // Listen for auth events — Supabase client auto-detects
+    // the hash fragment (#access_token=...&type=recovery/invite)
+    // and exchanges it for a session.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (resolved) return;
+      if (
+        event === "PASSWORD_RECOVERY" ||
+        event === "SIGNED_IN" ||
+        event === "TOKEN_REFRESHED"
+      ) {
+        resolved = true;
         setStatus("ready");
       }
     });
 
-    // Also check if user is already signed in (e.g. came via callback route)
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setStatus("ready");
+    // Fallback: if user is already signed in (e.g. navigated here directly)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!resolved && session) {
+        resolved = true;
+        setStatus("ready");
+      }
     });
+
+    // Timeout: if nothing happens after 5s, the link is invalid/expired
+    const timeout = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        setStatus("error");
+      }
+    }, 5000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const onSubmit = async (data: FormData) => {

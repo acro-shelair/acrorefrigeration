@@ -8,7 +8,7 @@ export async function inviteUser(email: string) {
   const supabase = createAdminClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { error } = await supabase.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${siteUrl}/auth/callback?next=/admin/set-password`,
+    redirectTo: `${siteUrl}/admin/set-password`,
   });
   if (error) throw new Error(error.message);
   await logActivity("create", "users", `Invited user: ${email}`);
@@ -41,7 +41,7 @@ export async function sendPasswordReset(email: string) {
   );
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/auth/callback?next=/admin/set-password`,
+    redirectTo: `${siteUrl}/admin/set-password`,
   });
   if (error) throw new Error(error.message);
 }
