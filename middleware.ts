@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { canAccess, getDefaultPage, type UserProfile } from "@/lib/rbac";
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  request.headers.set("x-pathname", pathname);
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -29,7 +31,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const pathname = request.nextUrl.pathname;
   const isLoginPath = pathname === "/admin/login";
 
   const redirect = (dest: string) => {
@@ -61,7 +62,6 @@ export async function middleware(request: NextRequest) {
 
     // No profile yet → treat as admin (first-time setup)
     if (!userProfile) {
-      supabaseResponse.headers.set("x-pathname", pathname);
       return supabaseResponse;
     }
 
@@ -70,7 +70,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  supabaseResponse.headers.set("x-pathname", pathname);
   return supabaseResponse;
 }
 
