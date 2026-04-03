@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   },
   openGraph: {
     url: "https://acrorefrigeration.com.au/acro-refrigeration-5-year-workmanship-guarantee",
-    images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }],
   },
 };
 

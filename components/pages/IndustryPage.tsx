@@ -2,6 +2,7 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone } from "lucide-react";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -76,16 +77,18 @@ const IndustryPage = ({
 
           {industry.image_url && (
             <motion.div
-              className="mt-12 rounded-xl overflow-hidden shadow-lg"
+              className="relative mt-12 rounded-xl overflow-hidden shadow-lg h-72 md:h-96"
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
             >
-              <img
+              <Image
                 src={industry.image_url}
                 alt={industry.title}
-                className="w-full h-72 md:h-96 object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 80vw"
+                className="object-cover"
               />
             </motion.div>
           )}

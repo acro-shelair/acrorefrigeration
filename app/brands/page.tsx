@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Specialist repairs and servicing for all major commercial refrigeration brands — Bitzer, Copeland, Danfoss, Daikin, Carrier and more. Expert technicians across Brisbane & SE Queensland.",
   alternates: { canonical: "https://acrorefrigeration.com.au/brands" },
-  openGraph: { url: "https://acrorefrigeration.com.au/brands", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+  openGraph: { url: "https://acrorefrigeration.com.au/brands", images: [{ url: "/api/og?title=Commercial+Refrigeration+Brands+We+Service&type=brands", width: 1200, height: 630, alt: "Acro Refrigeration — Brands We Service" }] },
 };
 
 const breadcrumbSchema = {

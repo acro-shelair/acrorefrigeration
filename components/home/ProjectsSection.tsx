@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Briefcase } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import { projectsHomeSection } from "@/data/home";
@@ -61,10 +62,12 @@ const ProjectsSection = ({ projects }: { projects: Project[] }) => {
                 {/* Cover image */}
                 {p.image_url && (
                   <div className="relative w-full h-44 overflow-hidden bg-muted">
-                    <img
+                    <Image
                       src={p.image_url}
                       alt={p.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                 )}

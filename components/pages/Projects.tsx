@@ -2,6 +2,7 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CTABanner from "@/components/home/CTABanner";
@@ -62,11 +63,13 @@ const Projects = ({ projects }: { projects: Project[] }) => (
                 href={`/projects/${p.slug}`}
                 className="block bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 overflow-hidden group h-full"
               >
-                <div className="h-48 overflow-hidden">
-                  <img
+                <div className="relative h-48 overflow-hidden">
+                  <Image
                     src={p.image_url ?? heroImg.src}
                     alt={p.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="p-6">

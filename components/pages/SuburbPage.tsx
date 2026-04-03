@@ -24,12 +24,14 @@ const cardVariant: Variants = {
   }),
 };
 
-const trustSignals = [
-  { icon: Clock,      label: "2hr Avg Response" },
-  { icon: Wrench,     label: "98% First-Visit Fix" },
-  { icon: Shield,     label: "HACCP Compliant" },
-  { icon: Headphones, label: "24/7 Support" },
+const defaultTrustSignals = [
+  { label: "Avg Response", value: "2 hrs" },
+  { label: "First-Visit Fix", value: "98%" },
+  { label: "HACCP Compliant", value: "Yes" },
+  { label: "Support", value: "24/7" },
 ];
+
+const trustIcons = [Clock, Wrench, Shield, Headphones];
 
 const SuburbPage = ({
   city, suburb, services, industries,
@@ -96,14 +98,20 @@ const SuburbPage = ({
       <section className="bg-secondary py-8 px-6">
         <div className="container-narrow">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {trustSignals.map((t, i) => (
-              <motion.div key={t.label} custom={i} variants={cardVariant} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <t.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div className="font-semibold text-sm">{t.label}</div>
-              </motion.div>
-            ))}
+            {(suburb.stats?.length > 0 ? suburb.stats : defaultTrustSignals).map((stat, i) => {
+              const Icon = trustIcons[i] ?? Clock;
+              return (
+                <motion.div key={stat.label} custom={i} variants={cardVariant} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm leading-tight">{stat.value}</div>
+                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

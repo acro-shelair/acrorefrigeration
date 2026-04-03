@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import Layout from "@/components/Layout";
 import { ArrowLeft, ArrowRight, Clock, BookOpen, FileText, Video } from "lucide-react";
 import {
@@ -62,11 +63,15 @@ function ContentBlockRenderer({ block }: { block: ContentBlock }) {
     case "image":
       return (
         <figure className="my-2">
-          <img
-            src={block.src}
-            alt={block.alt || ""}
-            className="w-full rounded-xl object-cover"
-          />
+          <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden">
+            <Image
+              src={block.src}
+              alt={block.alt || ""}
+              fill
+              sizes="(max-width: 768px) 100vw, 700px"
+              className="object-cover"
+            />
+          </div>
           {block.caption && (
             <figcaption className="text-xs text-muted-foreground mt-2 text-center italic">
               {block.caption}
@@ -198,15 +203,18 @@ const ResourcePage = ({
 
             {post.image_url && (
               <motion.div
-                className="mt-10 rounded-xl overflow-hidden shadow-lg"
+                className="relative mt-10 rounded-xl overflow-hidden shadow-lg h-64 md:h-96"
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
               >
-                <img
+                <Image
                   src={post.image_url}
                   alt={post.title}
-                  className="w-full h-64 md:h-96 object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 80vw"
+                  priority
+                  className="object-cover"
                 />
               </motion.div>
             )}

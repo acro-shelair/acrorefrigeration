@@ -2,6 +2,7 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, BookOpen, FileText, Video, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Post } from "@/lib/supabase/posts";
 import CTABanner from "@/components/home/CTABanner";
@@ -80,11 +81,13 @@ const Resources = ({ posts, page, totalPages }: { posts: Post[]; page: number; t
                   className="block bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow group h-full overflow-hidden"
                 >
                   {a.image_url && (
-                    <div className="w-full h-40 overflow-hidden">
-                      <img
+                    <div className="relative w-full h-40 overflow-hidden">
+                      <Image
                         src={a.image_url}
                         alt={a.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   )}

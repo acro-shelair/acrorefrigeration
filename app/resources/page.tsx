@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Expert guides and articles on commercial refrigeration, HACCP compliance, energy efficiency and cold room maintenance. Free resources from Acro Refrigeration.",
   alternates: { canonical: "https://acrorefrigeration.com.au/resources" },
-  openGraph: { url: "https://acrorefrigeration.com.au/resources", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+  openGraph: { url: "https://acrorefrigeration.com.au/resources", images: [{ url: "/api/og?title=Guides%2C+Articles+%26+Resources&type=resources", width: 1200, height: 630, alt: "Acro Refrigeration — Guides, Articles & Resources" }] },
 };
 
 const breadcrumbSchema = {

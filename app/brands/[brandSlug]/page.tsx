@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${brand.name} Compressor Repairs & Servicing`,
     description: brand.description,
     alternates: { canonical: `https://acrorefrigeration.com.au/brands/${brandSlug}` },
-    openGraph: { url: `https://acrorefrigeration.com.au/brands/${brandSlug}`, images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+    openGraph: { url: `https://acrorefrigeration.com.au/brands/${brandSlug}`, images: [{ url: `/api/og?title=${encodeURIComponent(brand.name + ' Compressor Repairs & Servicing')}&type=brand`, width: 1200, height: 630, alt: `Acro Refrigeration — ${brand.name} Specialist` }] },
   };
 }
 

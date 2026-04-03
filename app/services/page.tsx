@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "End-to-end commercial refrigeration services including cold room construction, system installation, HACCP compliance, smart monitoring and 24/7 emergency repairs across Brisbane & SE Queensland.",
   alternates: { canonical: "https://acrorefrigeration.com.au/services" },
-  openGraph: { url: "https://acrorefrigeration.com.au/services", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+  openGraph: { url: "https://acrorefrigeration.com.au/services", images: [{ url: "/api/og?title=Commercial+Refrigeration+Services&type=services", width: 1200, height: 630, alt: "Acro Refrigeration — Commercial Refrigeration Services" }] },
 };
 
 const breadcrumbSchema = {

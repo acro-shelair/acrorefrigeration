@@ -2,6 +2,7 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CTABanner from "@/components/home/CTABanner";
@@ -62,11 +63,13 @@ const Industries = ({ industries }: { industries: Industry[] }) => (
                 className="bg-card rounded-xl border border-border overflow-hidden"
               >
                 {ind.image_url && (
-                  <div className="w-full h-56 overflow-hidden">
-                    <img
+                  <div className="relative w-full h-56 overflow-hidden">
+                    <Image
                       src={ind.image_url}
                       alt={ind.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
                     />
                   </div>
                 )}

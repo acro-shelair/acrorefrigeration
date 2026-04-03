@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description:
     "Terms & Conditions for all quotations, work orders, repairs, maintenance, and installations performed by HVACR Pty Ltd trading as ACRO Refrigeration and Shelair Group. QBCC #15413155.",
   alternates: { canonical: "https://acrorefrigeration.com.au/terms" },
-  openGraph: { url: "https://acrorefrigeration.com.au/terms", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+  openGraph: { url: "https://acrorefrigeration.com.au/terms" },
 };
 
 export default async function TermsOfServicePage() {

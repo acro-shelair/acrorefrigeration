@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -45,11 +46,13 @@ const IndustryCards = ({ industries }: { industries: Industry[] }) => (
                 className="block bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 group h-full overflow-hidden"
               >
                 {ind.image_url && (
-                  <div className="w-full h-36 overflow-hidden">
-                    <img
+                  <div className="relative w-full h-36 overflow-hidden">
+                    <Image
                       src={ind.image_url}
                       alt={ind.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                 )}

@@ -2,6 +2,7 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone } from "lucide-react";
 import CTABanner from "@/components/home/CTABanner";
@@ -121,16 +122,18 @@ const Services = ({ services }: { services: Service[] }) => (
             </p>
           </motion.div>
           <motion.div
-            className="rounded-xl overflow-hidden shadow-lg"
+            className="relative rounded-xl overflow-hidden shadow-lg h-[350px]"
             initial={{ opacity: 0, x: 32 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
           >
-            <img
-              src={equipmentImg.src}
+            <Image
+              src={equipmentImg}
               alt="Commercial refrigeration equipment"
-              className="w-full h-[350px] object-cover"
+              className="object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </motion.div>
         </div>

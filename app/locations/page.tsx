@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "24/7 emergency repairs, preventative maintenance and cold room builds across South-East Queensland. Find your local refrigeration team in Brisbane, Gold Coast and Sunshine Coast.",
   alternates: { canonical: "https://acrorefrigeration.com.au/locations" },
-  openGraph: { url: "https://acrorefrigeration.com.au/locations", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+  openGraph: { url: "https://acrorefrigeration.com.au/locations", images: [{ url: "/api/og?title=Service+Areas+%E2%80%94+Find+Your+Local+Team&type=locations", width: 1200, height: 630, alt: "Acro Refrigeration — Service Areas" }] },
 };
 
 const breadcrumbSchema = {

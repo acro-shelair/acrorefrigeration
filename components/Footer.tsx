@@ -24,10 +24,12 @@ function AdminLink() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    createClient().auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user);
-      setChecking(false);
-    });
+    createClient()
+      .auth.getUser()
+      .then(({ data: { user } }) => {
+        setIsLoggedIn(!!user);
+        setChecking(false);
+      });
   }, []);
 
   if (checking) return null;
@@ -96,12 +98,30 @@ const Footer = () => {
   >([]);
   useEffect(() => {
     const supabase = createClient();
-    supabase.from("site_settings").select("*").limit(1).single()
-      .then(({ data }) => { if (data) setSettings(data); });
-    supabase.from("services").select("slug, title").not("slug", "is", null).order("position").limit(6)
-      .then(({ data }) => { if (data) setServices(data); });
-    supabase.from("industries").select("slug, title").order("position")
-      .then(({ data }) => { if (data) setIndustries(data); });
+    supabase
+      .from("site_settings")
+      .select("*")
+      .limit(1)
+      .single()
+      .then(({ data }) => {
+        if (data) setSettings(data);
+      });
+    supabase
+      .from("services")
+      .select("slug, title")
+      .not("slug", "is", null)
+      .order("position")
+      .limit(6)
+      .then(({ data }) => {
+        if (data) setServices(data);
+      });
+    supabase
+      .from("industries")
+      .select("slug, title")
+      .order("position")
+      .then(({ data }) => {
+        if (data) setIndustries(data);
+      });
   }, []);
 
   const phone = settings.phone ?? DEFAULTS.phone;
@@ -267,7 +287,9 @@ const Footer = () => {
         {/* Credentials line */}
         <div className="border-t border-dark-foreground/10 pt-6 pb-4 text-center">
           <p className="text-[11px] text-dark-foreground/30 leading-relaxed">
-            ARCtick 61340 &middot; QBCC 15413155 &middot; Electrical Contractor 92536 &middot; NSW Contractor 479925C &middot; NECA Member &middot; Veteran Community Business
+            ARCtick AU61340 &middot; QBCC 15413155 &middot; Electrical
+            Contractor 92536 &middot; NSW Contractor 479925C &middot; NECA
+            Member &middot; Veteran Community Business
           </p>
         </div>
 

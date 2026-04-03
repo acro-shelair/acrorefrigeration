@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     url: "https://acrorefrigeration.com.au/",
-    images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }],
+    images: [{ url: "/api/og?title=Commercial+Refrigeration+Repair+%26+Maintenance+Brisbane&type=default", width: 1200, height: 630, alt: "Acro Refrigeration — Commercial Refrigeration Repair & Maintenance Brisbane" }],
   },
 };
 

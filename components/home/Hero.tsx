@@ -126,16 +126,7 @@ const Hero = () => {
           </motion.div>
 
           {/* Right column — image (desktop) */}
-          <motion.div
-            className="relative hidden lg:block"
-            initial={{ opacity: 0, x: 28 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: 0.15,
-              ease: [0.25, 0.1, 0.25, 1],
-            }}
-          >
+          <div className="relative hidden lg:block">
             {/* Offset decorative border */}
             <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-2xl border-2 border-primary/25 pointer-events-none" />
             <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-foreground/10">
@@ -203,15 +194,10 @@ const Hero = () => {
                 Years of Excellence
               </div>
             </motion.div>
-          </motion.div>
+          </div>
 
           {/* Mobile image */}
-          <motion.div
-            className="lg:hidden rounded-2xl overflow-hidden shadow-xl"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
+          <div className="lg:hidden rounded-2xl overflow-hidden shadow-xl">
             <div className="relative w-full h-[240px] sm:h-[320px]">
               <Image
                 src={heroImg}
@@ -222,7 +208,7 @@ const Hero = () => {
                 sizes="100vw"
               />
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

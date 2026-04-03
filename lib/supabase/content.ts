@@ -181,6 +181,7 @@ export interface LocationSuburb {
   venue_types: string[];
   local_context_text: string;
   nearby_suburbs: string[];
+  stats: LocationStat[];
   position: number;
 }
 

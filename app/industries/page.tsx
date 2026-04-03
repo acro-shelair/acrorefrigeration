@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Specialist commercial refrigeration repairs and maintenance for restaurants, supermarkets, pharmaceuticals, warehousing and food production. HACCP and TGA compliant. Brisbane & SE Queensland.",
   alternates: { canonical: "https://acrorefrigeration.com.au/industries" },
-  openGraph: { url: "https://acrorefrigeration.com.au/industries", images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+  openGraph: { url: "https://acrorefrigeration.com.au/industries", images: [{ url: "/api/og?title=Industries+We+Serve&type=industries", width: 1200, height: 630, alt: "Acro Refrigeration — Industries We Serve" }] },
 };
 
 const breadcrumbSchema = {

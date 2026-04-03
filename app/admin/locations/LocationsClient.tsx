@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
-import type { LocationCity, LocationSuburb } from "@/lib/supabase/content";
+import type { LocationCity, LocationSuburb, LocationStat } from "@/lib/supabase/content";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,36 @@ import { Badge } from "@/components/ui/badge";
 import {
   Plus, Pencil, Trash2, ChevronDown, ChevronRight, MapPin,
 } from "lucide-react";
+
+// ─── Stats Editor ─────────────────────────────────────────────────────────────
+
+function StatsEditor({ stats, onChange }: { stats: LocationStat[]; onChange: (s: LocationStat[]) => void }) {
+  const update = (i: number, field: "label" | "value", val: string) => {
+    const next = [...stats];
+    next[i] = { ...next[i], [field]: val };
+    onChange(next);
+  };
+  const add = () => onChange([...stats, { label: "", value: "" }]);
+  const remove = (i: number) => onChange(stats.filter((_, idx) => idx !== i));
+
+  return (
+    <div className="space-y-2">
+      <Label>Stats</Label>
+      {stats.map((stat, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <Input placeholder="Label" value={stat.label} onChange={(e) => update(i, "label", e.target.value)} className="flex-1" />
+          <Input placeholder="Value" value={stat.value} onChange={(e) => update(i, "value", e.target.value)} className="flex-1" />
+          <Button type="button" size="sm" variant="ghost" onClick={() => remove(i)}>
+            <Trash2 className="w-3.5 h-3.5 text-destructive" />
+          </Button>
+        </div>
+      ))}
+      <Button type="button" size="sm" variant="outline" onClick={add}>
+        <Plus className="w-3.5 h-3.5 mr-1" /> Add Stat
+      </Button>
+    </div>
+  );
+}
 
 // ─── City dialog ──────────────────────────────────────────────────────────────
 
@@ -31,6 +61,7 @@ type CityForm = z.infer<typeof citySchema>;
 function CityDialog({ city, position, onSuccess }: { city?: LocationCity; position?: number; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<LocationStat[]>(city?.stats ?? []);
   const isEdit = !!city;
 
   const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<CityForm>({
@@ -47,12 +78,14 @@ function CityDialog({ city, position, onSuccess }: { city?: LocationCity; positi
   const onSubmit = async (data: CityForm) => {
     setError(null);
     const supabase = createClient();
+    const cleanStats = stats.filter((s) => s.label.trim() && s.value.trim());
     const payload = {
       name:               data.name,
       slug:               data.slug,
       region_description: data.region_description,
       zones:              data.zones.split(",").map((s) => s.trim()).filter(Boolean),
       sample_suburbs:     data.sample_suburbs.split(",").map((s) => s.trim()).filter(Boolean),
+      stats:              cleanStats,
     };
     try {
       if (isEdit) {
@@ -62,18 +95,18 @@ function CityDialog({ city, position, onSuccess }: { city?: LocationCity; positi
         const { error } = await supabase.from("location_cities").insert({ ...payload, position: position ?? 0 });
         if (error) throw error;
       }
-      reset(); setOpen(false); onSuccess();
+      reset(); setStats([]); setOpen(false); onSuccess();
     } catch (e: unknown) { setError(e instanceof Error ? e.message : "Failed."); }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v && city) setStats(city.stats ?? []); }}>
       <DialogTrigger asChild>
         {isEdit
           ? <Button size="sm" variant="ghost"><Pencil className="w-3.5 h-3.5" /></Button>
           : <Button size="sm"><Plus className="w-4 h-4 mr-1" /> New City</Button>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{isEdit ? "Edit City" : "New City"}</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
           <div className="grid grid-cols-2 gap-4">
@@ -101,6 +134,7 @@ function CityDialog({ city, position, onSuccess }: { city?: LocationCity; positi
             <Label>Sample Suburbs <span className="text-muted-foreground text-xs font-normal">shown on hub page, comma-separated</span></Label>
             <Input {...register("sample_suburbs")} placeholder="Fortitude Valley, Chermside" />
           </div>
+          <StatsEditor stats={stats} onChange={setStats} />
           {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">{error}</p>}
           <div className="flex gap-2 justify-end">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
@@ -130,6 +164,7 @@ function SuburbDialog({
 }: { cityId: string; suburb?: LocationSuburb; position?: number; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<LocationStat[]>(suburb?.stats ?? []);
   const isEdit = !!suburb;
 
   const { register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm<SuburbForm>({
@@ -148,6 +183,7 @@ function SuburbDialog({
   const onSubmit = async (data: SuburbForm) => {
     setError(null);
     const supabase = createClient();
+    const cleanStats = stats.filter((s) => s.label.trim() && s.value.trim());
     const payload = {
       city_id:            cityId,
       name:               data.name,
@@ -157,6 +193,7 @@ function SuburbDialog({
       venue_types:        data.venue_types.split(",").map((s) => s.trim()).filter(Boolean),
       local_context_text: data.local_context_text,
       nearby_suburbs:     data.nearby_suburbs.split(",").map((s) => s.trim()).filter(Boolean),
+      stats:              cleanStats,
     };
     try {
       if (isEdit) {
@@ -166,18 +203,18 @@ function SuburbDialog({
         const { error } = await supabase.from("location_suburbs").insert({ ...payload, position: position ?? 0 });
         if (error) throw error;
       }
-      reset(); setOpen(false); onSuccess();
+      reset(); setStats([]); setOpen(false); onSuccess();
     } catch (e: unknown) { setError(e instanceof Error ? e.message : "Failed."); }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v && suburb) setStats(suburb.stats ?? []); }}>
       <DialogTrigger asChild>
         {isEdit
           ? <Button size="sm" variant="ghost"><Pencil className="w-3.5 h-3.5" /></Button>
           : <Button size="sm" variant="outline"><Plus className="w-3.5 h-3.5 mr-1" /> Add Suburb</Button>}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{isEdit ? "Edit Suburb" : "Add Suburb"}</DialogTitle></DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
           <div className="grid grid-cols-2 gap-4">
@@ -216,6 +253,7 @@ function SuburbDialog({
             <Label>Nearby Suburbs <span className="text-muted-foreground text-xs font-normal">comma-separated</span></Label>
             <Input {...register("nearby_suburbs")} placeholder="South Brisbane, Newstead, Bowen Hills" />
           </div>
+          <StatsEditor stats={stats} onChange={setStats} />
           {error && <p className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">{error}</p>}
           <div className="flex gap-2 justify-end">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>

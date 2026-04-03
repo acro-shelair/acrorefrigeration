@@ -2,6 +2,7 @@
 
 import Layout from "@/components/Layout";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, CheckCircle, MapPin, Users, Briefcase } from "lucide-react";
 import {
@@ -106,13 +107,13 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
           if (allImages.length === 0) return null;
           if (allImages.length === 1) return (
             <motion.div
-              className="mt-12 rounded-xl overflow-hidden shadow-lg"
+              className="relative mt-12 rounded-xl overflow-hidden shadow-lg h-72 md:h-96"
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
             >
-              <img src={allImages[0]} alt={project.title} className="w-full h-72 md:h-96 object-cover" />
+              <Image src={allImages[0]} alt={project.title} fill sizes="(max-width: 768px) 100vw, 80vw" className="object-cover" />
             </motion.div>
           );
           return (
@@ -127,11 +128,13 @@ const ProjectPage = ({ project, related }: { project: Project; related: Project[
                 <CarouselContent>
                   {allImages.map((src, i) => (
                     <CarouselItem key={i}>
-                      <div className="rounded-xl overflow-hidden shadow-lg">
-                        <img
+                      <div className="relative rounded-xl overflow-hidden shadow-lg h-72 md:h-96">
+                        <Image
                           src={src}
                           alt={`${project.title} — image ${i + 1}`}
-                          className="w-full h-72 md:h-96 object-cover"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 80vw"
+                          className="object-cover"
                         />
                       </div>
                     </CarouselItem>

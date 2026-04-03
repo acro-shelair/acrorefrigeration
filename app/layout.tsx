@@ -38,11 +38,11 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Acro Refrigeration",
-    images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }],
+    images: [{ url: "/api/og?title=Acro+Refrigeration&description=24%2F7+Emergency+Repairs+%7C+Maintenance+Plans+%7C+Cold+Room+Builds&type=default", width: 1200, height: 630, alt: "Acro Refrigeration" }],
   },
   twitter: {
     card: "summary_large_image",
-    images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }],
+    images: [{ url: "/api/og?title=Acro+Refrigeration&description=24%2F7+Emergency+Repairs+%7C+Maintenance+Plans+%7C+Cold+Room+Builds&type=default", width: 1200, height: 630, alt: "Acro Refrigeration" }],
   },
 };
 
@@ -125,7 +125,7 @@ export default async function RootLayout({
             src="https://connect.podium.com/widget.js#ORG_TOKEN=be14e5eb-997b-49ae-8a7b-5009ff31ae98"
             id="podium-widget"
             data-organization-api-token="be14e5eb-997b-49ae-8a7b-5009ff31ae98"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
           />
         )}
       </body>

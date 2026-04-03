@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `Commercial Refrigeration Repairs ${city.name}`,
     description: city.region_description,
     alternates: { canonical: `https://acrorefrigeration.com.au/locations/${citySlug}` },
-    openGraph: { url: `https://acrorefrigeration.com.au/locations/${citySlug}`, images: [{ url: "/og-image.jpg", alt: "Acro Refrigeration" }] },
+    openGraph: { url: `https://acrorefrigeration.com.au/locations/${citySlug}`, images: [{ url: `/api/og?title=${encodeURIComponent('Commercial Refrigeration Repairs ' + city.name)}&type=location`, width: 1200, height: 630, alt: `Acro Refrigeration — ${city.name}` }] },
   };
 }
 

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: `https://acrorefrigeration.com.au/projects/${slug}` },
     openGraph: {
       url: `https://acrorefrigeration.com.au/projects/${slug}`,
-      images: [{ url: project.image_url ?? "/og-image.jpg", alt: project.title }],
+      images: [{ url: project.image_url ?? `/api/og?title=${encodeURIComponent(project.title)}&type=project`, width: 1200, height: 630, alt: project.title }],
     },
   };
 }
