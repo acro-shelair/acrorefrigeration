@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getAllCities, getCityWithSuburbs, getSuburbWithCity, getAllServices, getAllIndustries } from "@/lib/supabase/content";
+import { getAllCities, getCityWithSuburbs, getSuburbWithCity, getAllServices, getAllIndustries, getProjectsByLocation } from "@/lib/supabase/content";
+import { getRecentPosts } from "@/lib/supabase/posts";
 import { withRetry } from "@/lib/retry";
 import SuburbPage from "@/components/pages/SuburbPage";
 
@@ -49,9 +50,11 @@ export default async function SuburbPageRoute({ params }: Props) {
   if (!result) notFound();
   const { city, suburb } = result;
 
-  const [services, industries] = await Promise.all([
+  const [services, industries, projects, posts] = await Promise.all([
     withRetry(() => getAllServices(supabase)),
     withRetry(() => getAllIndustries(supabase)),
+    withRetry(() => getProjectsByLocation(supabase, city.name)),
+    withRetry(() => getRecentPosts(supabase)),
   ]);
 
   const localBusinessSchema = {
@@ -80,7 +83,7 @@ export default async function SuburbPageRoute({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <SuburbPage city={city} suburb={suburb} services={services} industries={industries} />
+      <SuburbPage city={city} suburb={suburb} services={services} industries={industries} projects={projects} posts={posts} />
     </>
   );
 }

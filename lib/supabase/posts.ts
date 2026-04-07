@@ -89,6 +89,20 @@ export async function getPublishedPostsPaginated(
   return { posts: data ?? [], total: count ?? 0 };
 }
 
+export async function getRecentPosts(
+  supabase: SupabaseClient,
+  limit = 3
+): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("published", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) return [];
+  return data ?? [];
+}
+
 export async function getPostBySlug(supabase: SupabaseClient, slug: string): Promise<Post | null> {
   const { data, error } = await supabase
     .from("posts")

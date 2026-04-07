@@ -28,7 +28,7 @@ export interface HeroStat {
 }
 
 export const hero = {
-  badge: "Australia's Trusted Refrigeration Experts",
+  badge: "Call Now. We can be there today",
   heading: "Commercial Refrigeration",
   headingHighlight: " Repair & Maintenance",
   headingEnd: ": Keeping Your Cold Chain Unbroken 24/7",

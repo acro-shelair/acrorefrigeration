@@ -76,28 +76,40 @@ const nextConfig: NextConfig = {
         // Static assets (images, fonts, icons)
         source: "/:all*(svg|jpg|jpeg|png|webp|avif|ico|woff|woff2)",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
       {
         // Next.js hashed static chunks (JS/CSS)
         source: "/_next/static/:path*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
       {
         // Next.js image optimisation endpoint
         source: "/_next/image/:path*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
         ],
       },
       {
         // Dynamic OG images — cache for 1 day, SWR for 7 days
         source: "/api/og",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
         ],
       },
     ];
@@ -133,7 +145,7 @@ const nextConfig: NextConfig = {
       // ── Old service pages → related current services ──────────────────────
       {
         source: "/commercial-airconditioning",
-        destination: "/services/24-7-commercial-air-conditioning-repairs",
+        destination: "/services/emergency-refrigeration-repairs",
         permanent: true,
       },
       {
@@ -163,13 +175,13 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/electrical-contractors-brisbane",
-        destination: "/services/24-7-commercial-air-conditioning-repairs",
+        destination: "/services/emergency-refrigeration-repairs",
         permanent: true,
       },
       {
         source:
           "/electrical-contractors-brisbane/commercial-air-conditioning-brisbane-gold-coast",
-        destination: "/services/24-7-commercial-air-conditioning-repairs",
+        destination: "/services/emergency-refrigeration-repairs",
         permanent: true,
       },
 

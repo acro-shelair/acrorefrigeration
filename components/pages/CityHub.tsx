@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import Layout from "@/components/Layout";
-import { MapPin, ArrowRight, Phone, Clock, Wrench, Users, CheckCircle } from "lucide-react";
+import { MapPin, ArrowRight, Phone, Clock, Wrench, Users, CheckCircle, BookOpen, FileText, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
-import type { LocationCity } from "@/lib/supabase/content";
+import type { LocationCity, Project } from "@/lib/supabase/content";
+import type { Post } from "@/lib/supabase/posts";
+import heroImg from "@/assets/hero-coldroom.jpg";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -25,7 +28,13 @@ const cardVariant: Variants = {
 
 const statIcons = [Clock, CheckCircle, Wrench, Users];
 
-const CityHub = ({ city }: { city: LocationCity }) => {
+function TypeIcon({ type }: { type: string }) {
+  if (type === "Guide") return <BookOpen className="w-3 h-3" />;
+  if (type === "Video") return <Video className="w-3 h-3" />;
+  return <FileText className="w-3 h-3" />;
+}
+
+const CityHub = ({ city, projects, posts }: { city: LocationCity; projects: Project[]; posts: Post[] }) => {
   const suburbs = city.location_suburbs ?? [];
   const grouped = city.zones.map((zone) => ({
     zone,
@@ -138,6 +147,105 @@ const CityHub = ({ city }: { city: LocationCity }) => {
           )}
         </div>
       </section>
+
+      {/* Case Studies */}
+      {projects.length > 0 && (
+        <section className="section-padding bg-secondary">
+          <div className="container-narrow">
+            <motion.div className="text-center mb-12" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">Recent Projects in {city.name}</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                See how we&apos;ve helped businesses in {city.name} with their commercial refrigeration needs.
+              </p>
+            </motion.div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {projects.map((p, i) => (
+                <motion.div key={p.id} custom={i} variants={cardVariant} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }}>
+                  <Link
+                    href={`/projects/${p.slug}`}
+                    className="block bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300 overflow-hidden group h-full"
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={p.image_url ?? heroImg.src}
+                        alt={p.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">{p.type}</span>
+                        <span className="text-xs text-muted-foreground">{p.size}</span>
+                      </div>
+                      <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors duration-200">{p.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">{p.description}</p>
+                      <span className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
+                        View Case Study <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Helpful Resources */}
+      {posts.length > 0 && (
+        <section className="section-padding bg-background">
+          <div className="container-narrow">
+            <motion.div className="text-center mb-12" variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">Helpful Resources</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Expert guides and articles on commercial refrigeration.
+              </p>
+            </motion.div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {posts.map((a, i) => (
+                <motion.div key={a.slug} custom={i} variants={cardVariant} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }}>
+                  <Link
+                    href={`/resources/${a.slug}`}
+                    className="block bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow group h-full overflow-hidden"
+                  >
+                    {a.image_url && (
+                      <div className="relative w-full h-40 overflow-hidden">
+                        <Image
+                          src={a.image_url}
+                          alt={a.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full flex items-center gap-1">
+                          <TypeIcon type={a.type} /> {a.type}
+                        </span>
+                        <span className="text-xs text-muted-foreground">{a.date}</span>
+                      </div>
+                      <h3 className="font-bold mb-2 group-hover:text-primary transition-colors leading-snug">{a.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">{a.description}</p>
+                      <span className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Read More <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+            <motion.div className="text-center mt-10" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
+              <Button asChild variant="outline" size="lg" className="cursor-pointer">
+                <Link href="/resources">View All Resources <ArrowRight className="w-4 h-4 ml-2" /></Link>
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       <CTABanner />
     </Layout>

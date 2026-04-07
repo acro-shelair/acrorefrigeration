@@ -22,6 +22,7 @@ export interface Service {
   process_steps: ServiceStep[];
   faqs: ServiceFaq[];
   related_service_slugs: string[];
+  highlighted: boolean;
 }
 
 export async function getAllServices(supabase: SupabaseClient): Promise<Service[]> {
@@ -334,6 +335,21 @@ export async function getProjectById(supabase: SupabaseClient, id: string): Prom
   const { data, error } = await supabase.from("projects").select("*").eq("id", id).single();
   if (error) return null;
   return data;
+}
+
+export async function getProjectsByLocation(
+  supabase: SupabaseClient,
+  cityName: string,
+  limit = 3
+): Promise<Project[]> {
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .ilike("location", `%${cityName}%`)
+    .order("position")
+    .limit(limit);
+  if (error) return [];
+  return data ?? [];
 }
 
 export async function getProjectBySlug(supabase: SupabaseClient, slug: string): Promise<Project | null> {

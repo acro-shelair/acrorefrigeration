@@ -62,7 +62,7 @@ export default async function RootLayout({
         getSiteSettings(supabase),
         supabase
           .from("services")
-          .select("slug, title")
+          .select("slug, title, highlighted")
           .not("slug", "is", null)
           .order("position")
           .then((r) => r.data ?? []),
@@ -107,7 +107,7 @@ export default async function RootLayout({
             navbar={
               <Navbar
                 phone={phone}
-                serviceItems={navServices as { slug: string; title: string }[]}
+                serviceItems={navServices as { slug: string; title: string; highlighted?: boolean }[]}
                 industryItems={
                   navIndustries as { slug: string; title: string }[]
                 }

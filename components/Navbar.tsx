@@ -4,13 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone, ChevronDown, MapPin, Wrench, Building2, Tag, LayoutGrid, Briefcase, BookOpen, DollarSign } from "lucide-react";
+import { Menu, X, Phone, ChevronDown, MapPin, Wrench, Building2, Tag, LayoutGrid, Briefcase, BookOpen, DollarSign, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import acroLogo from "@/assets/acro-logo.png";
 
 type DropdownKey = "services" | "industries" | "brands" | "locations" | "more";
-type MenuItem = { label: string; href: string; topLink?: true; icon?: React.ReactNode };
-type DynamicItem = { slug: string; title: string };
+type MenuItem = { label: string; href: string; topLink?: true; icon?: React.ReactNode; highlighted?: boolean };
+type DynamicItem = { slug: string; title: string; highlighted?: boolean };
 
 const moreMenu: MenuItem[] = [
   { label: "Projects",  href: "/projects",  topLink: true, icon: <Briefcase  className="w-3.5 h-3.5 text-primary shrink-0" /> },
@@ -61,7 +61,7 @@ const Navbar = ({
 
   const serviceMenu: MenuItem[] = [
     { label: "All Services", href: "/services", topLink: true },
-    ...serviceItems.map((s) => ({ label: s.title, href: `/services/${s.slug}` })),
+    ...serviceItems.map((s) => ({ label: s.title, href: `/services/${s.slug}`, highlighted: s.highlighted })),
   ];
 
   const industryMenu: MenuItem[] = [
@@ -136,9 +136,10 @@ const Navbar = ({
                       {item.topLink && i > 0 && <div className="mx-3 my-1 border-t border-border" />}
                       <Link
                         href={item.href}
-                        className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors hover:bg-secondary ${item.topLink ? "font-medium" : ""} ${pathname === item.href ? "text-foreground" : "text-muted-foreground"}`}
+                        className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors hover:bg-secondary ${item.topLink ? "font-medium" : ""} ${pathname === item.href ? "text-primary bg-primary/5 font-semibold" : item.highlighted === true ? "text-foreground font-medium" : "text-muted-foreground"}`}
                       >
                         {item.topLink && (item.icon ?? topIcon[key])}
+                        {item.highlighted === true ? <Star className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" /> : null}
                         {item.label}
                       </Link>
                     </div>
@@ -190,9 +191,10 @@ const Navbar = ({
                         key={item.href}
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${item.topLink ? "font-medium" : ""} ${pathname === item.href ? "text-foreground" : "text-muted-foreground"}`}
+                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${item.topLink ? "font-medium" : ""} ${pathname === item.href ? "text-primary bg-primary/5 font-semibold" : item.highlighted === true ? "text-foreground font-medium" : "text-muted-foreground"}`}
                       >
                         {item.topLink && (item.icon ?? topIcon[key])}
+                        {item.highlighted === true ? <Star className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" /> : null}
                         {item.label}
                       </Link>
                     ))}

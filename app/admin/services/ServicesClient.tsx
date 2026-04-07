@@ -7,7 +7,7 @@ import type { Service } from "@/lib/supabase/content";
 import { logActivity } from "@/lib/supabase/logging";
 import { getIcon } from "./icons";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Pencil, Trash2, ArrowUp, ArrowDown, Star } from "lucide-react";
 
 export default function ServicesClient({ initialServices }: { initialServices: Service[] }) {
   const [services, setServices] = useState(initialServices);
@@ -18,6 +18,14 @@ export default function ServicesClient({ initialServices }: { initialServices: S
     await supabase.from("services").delete().eq("id", service.id);
     await logActivity("delete", "services", `Deleted service: ${service.title}`);
     setServices((prev) => prev.filter((s) => s.id !== service.id));
+  };
+
+  const toggleHighlight = async (service: Service) => {
+    const supabase = createClient();
+    const newValue = !service.highlighted;
+    await supabase.from("services").update({ highlighted: newValue }).eq("id", service.id);
+    await logActivity("update", "services", `${newValue ? "Highlighted" : "Unhighlighted"} service: ${service.title}`);
+    setServices((prev) => prev.map((s) => s.id === service.id ? { ...s, highlighted: newValue } : s));
   };
 
   const move = async (index: number, direction: "up" | "down") => {
@@ -101,6 +109,14 @@ export default function ServicesClient({ initialServices }: { initialServices: S
 
                 {/* Actions */}
                 <div className="flex items-center gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toggleHighlight(service)}
+                    title={service.highlighted ? "Remove highlight" : "Highlight in navbar"}
+                  >
+                    <Star className={`w-3.5 h-3.5 ${service.highlighted ? "text-primary fill-primary" : "text-muted-foreground"}`} />
+                  </Button>
                   <Button asChild size="sm" variant="ghost">
                     <Link href={`/admin/services/${service.id}/edit`}>
                       <Pencil className="w-3.5 h-3.5" />

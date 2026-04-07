@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getPublishedPostsPaginated, RESOURCES_PAGE_SIZE } from "@/lib/supabase/posts";
+import { getPublishedPosts } from "@/lib/supabase/posts";
 import { withRetry } from "@/lib/retry";
 import Resources from "@/components/pages/Resources";
 
@@ -23,18 +23,13 @@ const breadcrumbSchema = {
   ],
 };
 
-type Props = { searchParams: Promise<{ page?: string }> };
-
-export default async function ResourcesPage({ searchParams }: Props) {
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+export default async function ResourcesPage() {
   const supabase = createAdminClient();
-  const { posts, total } = await withRetry(() => getPublishedPostsPaginated(supabase, page));
-  const totalPages = Math.ceil(total / RESOURCES_PAGE_SIZE);
+  const posts = await withRetry(() => getPublishedPosts(supabase));
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <Resources posts={posts} page={page} totalPages={totalPages} />
+      <Resources posts={posts} />
     </>
   );
 }
