@@ -31,7 +31,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import acroLogo from "@/assets/acro-logo.png";
+import acroLogo from "@/assets/acro-logo.webp";
 import type { UserProfile, PermissionKey } from "@/lib/rbac";
 import { Badge } from "@/components/ui/badge";
 

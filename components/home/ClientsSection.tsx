@@ -4,14 +4,14 @@ import Image from "next/image";
 import ScrollReveal from "@/components/ScrollReveal";
 import { clientsSection } from "@/data/home";
 
-import brisbanClub from "@/assets/clients/brisbane-club.png";
-import marriott from "@/assets/clients/client-marriot.png";
-import gambaro from "@/assets/clients/gambaro.png";
-import geebungRsl from "@/assets/clients/geebungrsl-logo-3.png";
-import kedron from "@/assets/clients/kedron.png";
-import norths from "@/assets/clients/norths.png";
-import orford from "@/assets/clients/orford.png";
-import stamford from "@/assets/clients/stamford-1.png";
+import brisbanClub from "@/assets/clients/brisbane-club.webp";
+import marriott from "@/assets/clients/client-marriot.webp";
+import gambaro from "@/assets/clients/gambaro.webp";
+import geebungRsl from "@/assets/clients/geebungrsl-logo-3.webp";
+import kedron from "@/assets/clients/kedron.webp";
+import norths from "@/assets/clients/norths.webp";
+import orford from "@/assets/clients/orford.webp";
+import stamford from "@/assets/clients/stamford-1.webp";
 
 const clients = [
   { src: brisbanClub, alt: "Brisbane Club" },

@@ -7,7 +7,7 @@ import Image from "next/image";
 import { ArrowRight, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CTABanner from "@/components/home/CTABanner";
-import heroImg from "@/assets/hero-coldroom.jpg";
+import heroImg from "@/assets/hero-coldroom.webp";
 import { motion, Variants } from "framer-motion";
 import { projectsPage } from "@/data/projects";
 import type { Project } from "@/lib/supabase/content";

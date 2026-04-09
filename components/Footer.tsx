@@ -12,7 +12,7 @@ import {
   Linkedin,
   Instagram,
 } from "lucide-react";
-import acroLogo from "@/assets/acro-logo.png";
+import acroLogo from "@/assets/acro-logo.webp";
 import { createClient } from "@/lib/supabase/client";
 import type { SiteSettings, FooterLink } from "@/lib/supabase/content";
 

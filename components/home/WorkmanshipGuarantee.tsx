@@ -6,7 +6,7 @@ import { CheckCircle2, XCircle, ShieldCheck, BadgeCheck, Wrench, Handshake } fro
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { workmanshipGuarantee } from "@/data/home";
-import guaranteeBadge from "@/assets/5-year-workmanship.png";
+import guaranteeBadge from "@/assets/5-year-workmanship.webp";
 
 const meansIcons = [ShieldCheck, BadgeCheck, Handshake];
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import acroLogo from "@/assets/acro-logo.png";
+import acroLogo from "@/assets/acro-logo.webp";
 import { useLoading } from "@/lib/loading-context";
 
 export default function LoadingScreen() {

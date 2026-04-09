@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
-import heroImg from "@/assets/hero-coldroom.jpg";
+import heroImg from "@/assets/hero-coldroom.webp";
 import { hero } from "@/data/home";
 
 const trustItems = [

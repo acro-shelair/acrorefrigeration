@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, Phone, ChevronDown, MapPin, Wrench, Building2, Tag, LayoutGrid, Briefcase, BookOpen, DollarSign, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import acroLogo from "@/assets/acro-logo.png";
+import acroLogo from "@/assets/acro-logo.webp";
 
 type DropdownKey = "services" | "industries" | "brands" | "locations" | "more";
 type MenuItem = { label: string; href: string; topLink?: true; icon?: React.ReactNode; highlighted?: boolean };

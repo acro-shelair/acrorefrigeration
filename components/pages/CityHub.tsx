@@ -10,7 +10,7 @@ import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
 import type { LocationCity, Project } from "@/lib/supabase/content";
 import type { Post } from "@/lib/supabase/posts";
-import heroImg from "@/assets/hero-coldroom.jpg";
+import heroImg from "@/assets/hero-coldroom.webp";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },

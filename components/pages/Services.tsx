@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone } from "lucide-react";
 import CTABanner from "@/components/home/CTABanner";
 import FAQSection from "@/components/home/FAQSection";
-import equipmentImg from "@/assets/equipment.jpg";
+import equipmentImg from "@/assets/equipment.webp";
 import { motion, Variants } from "framer-motion";
 import { serviceSteps, servicesPage } from "@/data/services";
 import type { Service } from "@/lib/supabase/content";
