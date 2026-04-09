@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { cities } from "@/data/locations";
+import type { LocationCity } from "@/lib/supabase/content";
 import { locationsSection } from "@/data/home";
 import { motion, Variants } from "framer-motion";
 
@@ -21,7 +21,7 @@ const cardVariant: Variants = {
   }),
 };
 
-const LocationsSection = () => (
+const LocationsSection = ({ cities }: { cities: LocationCity[] }) => (
   <section className="section-padding bg-background">
     <div className="container-narrow">
       <motion.div
@@ -61,10 +61,10 @@ const LocationsSection = () => (
               </div>
               <h3 className="text-xl font-extrabold mb-2">{city.name}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-                {city.regionDescription}
+                {city.region_description}
               </p>
               <div className="flex flex-wrap gap-1.5 mb-5">
-                {city.sampleSuburbs.map((s) => (
+                {city.sample_suburbs.map((s) => (
                   <Badge key={s} variant="secondary" className="text-xs font-medium">
                     {s}
                   </Badge>
