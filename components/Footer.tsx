@@ -280,6 +280,16 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <a
+                  href="https://hvacrgroup.com.au"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  HVACR Group
+                </a>
+              </li>
             </ul>
           </div>
         </div>
