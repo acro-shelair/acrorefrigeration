@@ -1,18 +1,34 @@
 import type { NextConfig } from "next";
 import { createClient } from "@supabase/supabase-js";
 
-async function getOldSiteRedirects() {
+type RedirectRule = {
+  source: string;
+  destination: string;
+  permanent: boolean;
+};
+
+/**
+ * Helper that creates a permanent (308) redirect which matches both
+ * trailing-slash and non-trailing-slash variants of the source path.
+ * This prevents extra hops in the redirect chain for legacy WordPress
+ * URLs (which always have trailing slashes).
+ */
+function redirect(source: string, destination: string): RedirectRule {
+  return {
+    source: `${source}{/}?`,
+    destination,
+    permanent: true,
+  };
+}
+
+async function getOldSiteRedirects(): Promise<RedirectRule[]> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) return [];
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-  const redirects: {
-    source: string;
-    destination: string;
-    permanent: boolean;
-  }[] = [];
+  const redirects: RedirectRule[] = [];
 
   // Redirect old blog URLs: /blog-slug → /resources/blog-slug
   const { data: posts } = await supabase
@@ -22,11 +38,7 @@ async function getOldSiteRedirects() {
 
   if (posts) {
     for (const post of posts) {
-      redirects.push({
-        source: `/${post.slug}`,
-        destination: `/resources/${post.slug}`,
-        permanent: true,
-      });
+      redirects.push(redirect(`/${post.slug}`, `/resources/${post.slug}`));
     }
   }
 
@@ -38,11 +50,7 @@ async function getOldSiteRedirects() {
 
   if (services) {
     for (const service of services) {
-      redirects.push({
-        source: `/${service.slug}`,
-        destination: `/services/${service.slug}`,
-        permanent: true,
-      });
+      redirects.push(redirect(`/${service.slug}`, `/services/${service.slug}`));
     }
   }
 
@@ -118,200 +126,102 @@ const nextConfig: NextConfig = {
     const oldSiteRedirects = await getOldSiteRedirects();
 
     return [
-      // Manual redirects for renamed pages
-      {
-        source: "/process",
-        destination: "/services",
-        permanent: true,
-      },
-      {
-        source: "/contact-us",
-        destination: "/contact",
-        permanent: true,
-      },
-
-      {
-        source: "/blog",
-        destination: "/resources",
-        permanent: true,
-      },
-
-      {
-        source: "/about-us",
-        destination: "/",
-        permanent: true,
-      },
+      // ── Manual redirects for renamed pages ────────────────────────────────
+      redirect("/process", "/services"),
+      redirect("/contact-us", "/contact"),
+      redirect("/blog", "/resources"),
+      redirect("/about-us", "/"),
 
       // ── Old service pages → related current services ──────────────────────
-      {
-        source: "/commercial-airconditioning",
-        destination: "/services/emergency-refrigeration-repairs",
-        permanent: true,
-      },
-      {
-        source: "/emergency-commercial-refrigeration-repairs",
-        destination: "/services/emergency-refrigeration-repairs",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-repairs",
-        destination: "/services/emergency-refrigeration-repairs",
-        permanent: true,
-      },
-      {
-        source: "/services/commercial-refrigeration-maintenance",
-        destination: "/services/refrigeration-preventive-maintenance-qld",
-        permanent: true,
-      },
-      {
-        source: "/services/emergency-commercial-refrigeration-repairs",
-        destination: "/services/emergency-refrigeration-repairs",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-installation",
-        destination: "/services/cold-room-builder-qld",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-maintenance",
-        destination: "/services/refrigeration-preventive-maintenance-qld",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-maintenance/cold-room-maintenance",
-        destination: "/services/refrigeration-preventive-maintenance-qld",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-hygiene-inspection",
-        destination: "/services/haccp-compliance-certification",
-        permanent: true,
-      },
-      {
-        source: "/equipment-replacement-consulting",
-        destination: "/services/refrigeration-energy-audits",
-        permanent: true,
-      },
-      {
-        source: "/electrical-contractors-brisbane",
-        destination: "/services/emergency-refrigeration-repairs",
-        permanent: true,
-      },
-      {
-        source:
-          "/electrical-contractors-brisbane/commercial-air-conditioning-brisbane-gold-coast",
-        destination: "/services/emergency-refrigeration-repairs",
-        permanent: true,
-      },
+      redirect(
+        "/commercial-airconditioning",
+        "/services/emergency-refrigeration-repairs"
+      ),
+      redirect(
+        "/emergency-commercial-refrigeration-repairs",
+        "/services/emergency-refrigeration-repairs"
+      ),
+      redirect(
+        "/commercial-refrigeration-repairs",
+        "/services/emergency-refrigeration-repairs"
+      ),
+      redirect(
+        "/services/commercial-refrigeration-maintenance",
+        "/services/refrigeration-preventive-maintenance-qld"
+      ),
+      redirect(
+        "/services/emergency-commercial-refrigeration-repairs",
+        "/services/emergency-refrigeration-repairs"
+      ),
+      redirect(
+        "/commercial-refrigeration-installation",
+        "/services/cold-room-builder-qld"
+      ),
+      redirect(
+        "/commercial-refrigeration-maintenance",
+        "/services/refrigeration-preventive-maintenance-qld"
+      ),
+      redirect(
+        "/commercial-refrigeration-maintenance/cold-room-maintenance",
+        "/services/refrigeration-preventive-maintenance-qld"
+      ),
+      redirect(
+        "/commercial-refrigeration-hygiene-inspection",
+        "/services/haccp-compliance-certification"
+      ),
+      redirect(
+        "/equipment-replacement-consulting",
+        "/services/refrigeration-energy-audits"
+      ),
+      redirect(
+        "/electrical-contractors-brisbane",
+        "/services/emergency-refrigeration-repairs"
+      ),
+      redirect(
+        "/electrical-contractors-brisbane/commercial-air-conditioning-brisbane-gold-coast",
+        "/services/emergency-refrigeration-repairs"
+      ),
 
       // ── Old product pages → related services or services index ────────────
-      {
-        source: "/commercial-refrigeration-products",
-        destination: "/services",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-products/chillers",
-        destination: "/services",
-        permanent: true,
-      },
-      {
-        source: "/refrigerated-display-cabinets-and-fridges",
-        destination: "/services",
-        permanent: true,
-      },
-      {
-        source: "/fridge-freezer-cold-room-seals",
-        destination: "/services/cold-room-builder-qld",
-        permanent: true,
-      },
-      {
-        source: "/ice-machines-brisbane-gold-coast-sunshine-coast-qld",
-        destination: "/services",
-        permanent: true,
-      },
-      {
-        source: "/skid-mount-cold-room-sales-hire",
-        destination: "/services/mobile-cold-rooms",
-        permanent: true,
-      },
-      {
-        source: "/wine-rooms-and-wine-storage",
-        destination: "/services/cold-room-builder-qld",
-        permanent: true,
-      },
+      redirect("/commercial-refrigeration-products", "/services"),
+      redirect("/commercial-refrigeration-products/chillers", "/services"),
+      redirect("/refrigerated-display-cabinets-and-fridges", "/services"),
+      redirect(
+        "/fridge-freezer-cold-room-seals",
+        "/services/cold-room-builder-qld"
+      ),
+      redirect(
+        "/ice-machines-brisbane-gold-coast-sunshine-coast-qld",
+        "/services"
+      ),
+      redirect(
+        "/skid-mount-cold-room-sales-hire",
+        "/services/mobile-cold-rooms"
+      ),
+      redirect(
+        "/wine-rooms-and-wine-storage",
+        "/services/cold-room-builder-qld"
+      ),
 
       // ── Old content/resource pages ────────────────────────────────────────
-      {
-        source: "/about-us",
-        destination: "/",
-        permanent: true,
-      },
-      {
-        source: "/blog",
-        destination: "/resources",
-        permanent: true,
-      },
-      {
-        source: "/cold-room-faq",
-        destination: "/services/cold-room-builder-qld",
-        permanent: true,
-      },
-      {
-        source: "/cold-room-gallery",
-        destination: "/projects",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-faq",
-        destination: "/services",
-        permanent: true,
-      },
-      {
-        source: "/commercial-refrigeration-book",
-        destination: "/resources",
-        permanent: true,
-      },
-      {
-        source: "/air-conditioning-calculator",
-        destination: "/services/refrigeration-energy-audits",
-        permanent: true,
-      },
-      {
-        source: "/need-finance",
-        destination: "/contact",
-        permanent: true,
-      },
-      {
-        source: "/careers",
-        destination: "/contact",
-        permanent: true,
-      },
+      redirect("/cold-room-faq", "/services/cold-room-builder-qld"),
+      redirect("/cold-room-gallery", "/projects"),
+      redirect("/commercial-refrigeration-faq", "/services"),
+      redirect("/commercial-refrigeration-book", "/resources"),
+      redirect(
+        "/air-conditioning-calculator",
+        "/services/refrigeration-energy-audits"
+      ),
+      redirect("/need-finance", "/contact"),
+      redirect("/careers", "/contact"),
 
       // ── Old legal pages ───────────────────────────────────────────────────
-      {
-        source: "/privacy-policy",
-        destination: "/privacy",
-        permanent: true,
-      },
-      {
-        source: "/terms-and-conditions",
-        destination: "/terms",
-        permanent: true,
-      },
-      {
-        source: "/refund_returns",
-        destination: "/terms",
-        permanent: true,
-      },
-      {
-        source: "/shipping-policy",
-        destination: "/terms",
-        permanent: true,
-      },
+      redirect("/privacy-policy", "/privacy"),
+      redirect("/terms-and-conditions", "/terms"),
+      redirect("/refund_returns", "/terms"),
+      redirect("/shipping-policy", "/terms"),
 
-      // Auto-generated redirects from old site URLs
+      // ── Auto-generated redirects from old site URLs ───────────────────────
       ...oldSiteRedirects,
     ];
   },
