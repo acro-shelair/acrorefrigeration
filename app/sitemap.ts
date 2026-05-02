@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       query("industries", supabase.from("industries").select("slug, updated_at")),
       query("brands", supabase.from("brands").select("slug, updated_at")),
       query("projects", supabase.from("projects").select("slug, updated_at")),
-      query("cities", supabase.from("location_cities").select("slug, updated_at, location_suburbs(slug, updated_at)").order("position")),
+      query("cities", supabase.from("location_cities").select("slug, updated_at").order("position")),
     ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -70,13 +70,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: city.updated_at,
   }));
 
-  const suburbRoutes = (cities ?? []).flatMap((city: any) =>
-    (city.location_suburbs ?? []).map((suburb: any) => ({
-      url: `${BASE_URL}/locations/${city.slug}/${suburb.slug}`,
-      lastModified: suburb.updated_at,
-    }))
-  );
-
   return [
     ...staticRoutes,
     ...serviceRoutes,
@@ -85,6 +78,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...resourceRoutes,
     ...projectRoutes,
     ...cityRoutes,
-    ...suburbRoutes,
   ];
 }
