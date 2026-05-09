@@ -4,12 +4,18 @@ export type PostType = "Guide" | "Article" | "Case Study" | "Video";
 
 // ── Content block types ─────────────────────────────────────────────────────
 
-export type ContentBlock =
+type LeafContentBlock =
   | { type: "paragraph"; text: string }
   | { type: "image"; src: string; alt?: string; caption?: string }
   | { type: "blockquote"; text: string; cite?: string }
   | { type: "list"; style: "bullet" | "number" | "letter"; items: string[] }
-  | { type: "faq"; items: { question: string; answer: string }[] };
+  | { type: "faq"; items: { question: string; answer: string }[] }
+  | { type: "media-cards"; layout: "row" | "grid" | "stack"; items: { src: string; alt?: string; title: string; description: string }[] }
+  | { type: "comparison"; leftLabel: string; rightLabel: string; rows: { feature: string; left: string; right: string }[] };
+
+export type ContentBlock =
+  | LeafContentBlock
+  | { type: "columns"; columns: { blocks: ContentBlock[] }[] };
 
 /**
  * Normalise raw DB content into ContentBlock[].

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getAllCities, getCityWithSuburbs, getProjectsByLocation } from "@/lib/supabase/content";
+import { getAllCities, getCityWithSuburbs, getProjectsByLocation, getAllTestimonials } from "@/lib/supabase/content";
 import { getRecentPosts } from "@/lib/supabase/posts";
 import { withRetry } from "@/lib/retry";
 import CityHub from "@/components/pages/CityHub";
@@ -40,9 +40,10 @@ export default async function CityPageRoute({ params }: Props) {
   const city = await withRetry(() => getCityWithSuburbs(supabase, citySlug));
   if (!city) notFound();
 
-  const [projects, posts] = await Promise.all([
+  const [projects, posts, testimonials] = await Promise.all([
     withRetry(() => getProjectsByLocation(supabase, city.name)),
     withRetry(() => getRecentPosts(supabase)),
+    withRetry(() => getAllTestimonials(supabase)),
   ]);
 
   const localBusinessSchema = {
@@ -69,7 +70,7 @@ export default async function CityPageRoute({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <CityHub city={city} projects={projects} posts={posts} />
+      <CityHub city={city} projects={projects} posts={posts} testimonials={testimonials} />
     </>
   );
 }

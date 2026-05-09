@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import {
   Plus, Pencil, Trash2, ChevronDown, ChevronRight, MapPin,
 } from "lucide-react";
@@ -327,7 +328,11 @@ export default function LocationsClient({ initialCities }: { initialCities: City
                 </button>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <SuburbDialog cityId={city.id} position={city.location_suburbs?.length ?? 0} onSuccess={refresh} />
-                  <CityDialog city={city} onSuccess={refresh} />
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link href={`/admin/locations/${city.id}/edit`}>
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Link>
+                  </Button>
                   <Button size="sm" variant="ghost" onClick={() => deleteCity(city)}>
                     <Trash2 className="w-3.5 h-3.5 text-destructive" />
                   </Button>

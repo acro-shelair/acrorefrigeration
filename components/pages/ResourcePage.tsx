@@ -3,7 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import Layout from "@/components/Layout";
-import { ArrowLeft, ArrowRight, Clock, BookOpen, FileText, Video } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Clock,
+  BookOpen,
+  FileText,
+  Video,
+} from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,13 +19,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { ContentBlockRenderer } from "@/components/ContentBlockRenderer";
 import CTABanner from "@/components/home/CTABanner";
 import { motion, Variants } from "framer-motion";
 import type { Post, ContentBlock } from "@/lib/supabase/posts";
@@ -52,89 +54,6 @@ type RelatedPost = {
   description: string;
   date: string;
 };
-
-function ContentBlockRenderer({ block }: { block: ContentBlock }) {
-  switch (block.type) {
-    case "paragraph":
-      return (
-        <p className="text-muted-foreground leading-relaxed">{block.text}</p>
-      );
-
-    case "image":
-      return (
-        <figure className="my-2">
-          <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden">
-            <Image
-              src={block.src}
-              alt={block.alt || ""}
-              fill
-              sizes="(max-width: 768px) 100vw, 700px"
-              className="object-cover"
-            />
-          </div>
-          {block.caption && (
-            <figcaption className="text-xs text-muted-foreground mt-2 text-center italic">
-              {block.caption}
-            </figcaption>
-          )}
-        </figure>
-      );
-
-    case "blockquote":
-      return (
-        <blockquote className="border-l-4 border-primary/30 pl-5 py-1 my-2">
-          <p className="text-muted-foreground leading-relaxed italic">
-            &ldquo;{block.text}&rdquo;
-          </p>
-          {block.cite && (
-            <cite className="text-xs text-muted-foreground mt-1 block not-italic">
-              — {block.cite}
-            </cite>
-          )}
-        </blockquote>
-      );
-
-    case "list": {
-      const Tag = block.style === "bullet" ? "ul" : "ol";
-      const listClass =
-        block.style === "bullet"
-          ? "list-disc"
-          : block.style === "number"
-          ? "list-decimal"
-          : "list-[lower-alpha]";
-      return (
-        <Tag className={`${listClass} pl-6 space-y-1.5 text-muted-foreground leading-relaxed`}>
-          {block.items.map((item, k) => (
-            <li key={k}>{item}</li>
-          ))}
-        </Tag>
-      );
-    }
-
-    case "faq":
-      return (
-        <Accordion type="single" collapsible className="space-y-2">
-          {block.items.map((item, k) => (
-            <AccordionItem
-              key={k}
-              value={`faq-${k}`}
-              className="border border-border rounded-xl px-5 data-[state=open]:border-primary/30"
-            >
-              <AccordionTrigger className="text-sm font-semibold text-left hover:no-underline py-4">
-                {item.question}
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
-                {item.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      );
-
-    default:
-      return null;
-  }
-}
 
 type PostLink = { slug: string; title: string } | null;
 
@@ -225,7 +144,7 @@ const ResourcePage = ({
       {/* Article body */}
       <section className="pb-16 bg-background">
         <div className="container-narrow">
-          <div className="max-w-3xl">
+          <div className="space-y-10">
             <div className="border-t border-border pt-12 space-y-12">
               {post.post_sections?.map((section, i) => {
                 return (
@@ -348,7 +267,9 @@ const ResourcePage = ({
                 >
                   <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:-translate-x-1 transition-all flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground mb-1">Previous Article</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Previous Article
+                    </p>
                     <p className="font-bold group-hover:text-primary transition-colors truncate">
                       {prevPost.title}
                     </p>
@@ -363,7 +284,9 @@ const ResourcePage = ({
                   className="flex items-center gap-3 flex-1 min-w-0 justify-end text-right group"
                 >
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground mb-1">Next Article</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Next Article
+                    </p>
                     <p className="font-bold group-hover:text-primary transition-colors truncate">
                       {nextPost.title}
                     </p>

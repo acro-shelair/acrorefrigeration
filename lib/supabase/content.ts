@@ -171,6 +171,8 @@ export async function getAllOtherBrands(supabase: SupabaseClient): Promise<Other
 // ── Locations ────────────────────────────────────────────────────────────────
 
 export interface LocationStat { label: string; value: string }
+export interface CityKeyArea { name: string; description: string }
+export interface CitySection { heading: string; blocks: import("@/lib/supabase/posts").ContentBlock[] }
 
 export interface LocationCity {
   id: string;
@@ -181,6 +183,8 @@ export interface LocationCity {
   zones: string[];
   sample_suburbs: string[];
   position: number;
+  city_sections?: CitySection[];
+  key_areas?: CityKeyArea[];
   location_suburbs?: LocationSuburb[];
 }
 

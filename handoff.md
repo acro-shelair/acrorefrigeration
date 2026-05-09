@@ -1,7 +1,7 @@
 # SEO Handoff — Acro Refrigeration (acrorefrigerationnext)
 
 **Date:** 2026-05-02
-**Status:** Plan agreed, no code changes made yet.
+**Status:** Phase 1 complete. Phase 2 complete (code done, DB migration pending).
 
 ---
 
@@ -26,7 +26,7 @@ Programmatic location/industry/brand pages are stuck in Google Search Console as
   - `/locations/[citySlug]/page.tsx` — city hub
   - `/industries/[industrySlug]/page.tsx` — industry detail
   - `/brands/[brandSlug]/page.tsx` — brand detail
-- **Sitemap:** `app/sitemap.ts` — currently includes all suburb URLs
+- **Sitemap:** `app/sitemap.ts` — suburb URLs removed
 
 ---
 
@@ -52,43 +52,65 @@ These pages can rank for high-intent queries like "healthcare refrigeration comp
 
 ## Action Plan
 
-### Phase 1 — Stop the bleeding (immediate)
+### Phase 1 — Stop the bleeding ✅ COMPLETE
 
-**1a. noindex suburb pages**
-- File: `app/locations/[citySlug]/[suburbSlug]/page.tsx`
-- In `generateMetadata`, add `robots: { index: false, follow: true }` to the returned metadata object.
-- This emits `<meta name="robots" content="noindex, follow">` on every suburb page.
-- `follow: true` keeps link equity flowing to city pages via internal links.
+**1a. noindex suburb pages** ✅ Already present in code
+- `app/locations/[citySlug]/[suburbSlug]/page.tsx` line 42
+- `robots: { index: false, follow: true }` in `generateMetadata`
 
-```ts
-// Inside generateMetadata return:
-robots: { index: false, follow: true },
-```
-
-**1b. Remove suburb URLs from sitemap**
-- File: `app/sitemap.ts`
-- The `suburbRoutes` constant (lines 73–78) builds all suburb URLs.
-- Remove the `suburbRoutes` array and its spread from the final return (line 88).
-- This stops submitting suburb URLs to Google — noindex alone still wastes crawl budget if Google keeps finding them via sitemap.
-
-```ts
-// DELETE lines 73–78 (suburbRoutes const)
-// DELETE ...suburbRoutes from the return array
-```
+**1b. Remove suburb URLs from sitemap** ✅ Done 2026-05-02
+- `app/sitemap.ts` — removed `suburbRoutes` const and its spread
+- Trimmed the `cities` query to remove the `location_suburbs` join (no longer needed)
 
 ---
 
-### Phase 2 — Enrich city pages (short-term, 1–2 weeks)
+### Phase 2 — Enrich city pages ✅ Code complete, DB migration pending
 
-Make the 3–4 city pages (Brisbane, Gold Coast, Sunshine Coast, Ipswich/other) genuinely substantive. Each city page should have:
+**Goal:** Make the 3–4 city pages genuinely substantive so Google indexes and ranks them.
 
-- **Project case studies by area** — pull from Supabase `projects` table filtered to that city; display with photos, business type, problem solved
-- **City-specific commercial density** — e.g., "Brisbane CBD has X licensed food businesses requiring HACCP compliance" (can be written once per city, not per suburb)
-- **Coastal/climate context for Gold Coast** — salt air corrosion, humidity impact on refrigeration
-- **Area-specific business types** — Fortitude Valley restaurants, Surfers Paradise hospitality strip, etc.
-- **Testimonials filtered to that city** (if available in DB)
+**What was already in CityHub (no changes needed):**
+- Projects/case studies filtered by city (with photos)
+- City stats bar
+- Coverage zones grid with suburb business types
+- Helpful resources / posts section
 
-File to enrich: `components/pages/CityHub.tsx` (or equivalent — check component name)
+**What was added (2026-05-02):**
+
+**2a. Testimonials section**
+- Route `app/locations/[citySlug]/page.tsx` now fetches `getAllTestimonials` and passes to `CityHub`
+- `CityHub.tsx` renders `<Testimonials>` (reuses existing home component) between Case Studies and Resources
+- Renders all testimonials — no city filtering since `testimonials` table has no `city_id`
+
+**2b. City Content Sections (rich blocks)**
+- New `city_sections` jsonb field on `location_cities` table — array of `{heading, blocks[]}` using the same block schema as `post_sections` (paragraph, image, blockquote, list, faq)
+- `CityHub.tsx` renders sections with H2 headings and `ContentBlockRenderer` (shared with ResourcePage)
+- Section hidden if array is empty — safe to deploy before content is written
+
+**2c. Key Business Areas section**
+- New `key_areas` jsonb field on `location_cities` table (`[{name, description}]`)
+- `CityHub.tsx` renders after city sections: grid of named precinct cards (e.g. Fortitude Valley, South Bank)
+- Section hidden if array is empty — safe to deploy before content is written
+
+**2d. Admin editor for city content**
+- New full-page editor at `/admin/locations/[id]/edit` — same sections/blocks pattern as PostEditor
+- Handles all city fields: name, slug, region description, zones, sample suburbs, stats, key areas, content sections
+- Pencil icon on each city row in `/admin/locations` now navigates to this editor instead of a modal
+- `CityDialog` kept for creating new cities only
+
+**Migration to run:**
+```
+supabase/migrations/20260502000029_city_seo_fields.sql
+```
+Run this against Supabase before using the editor. Fields default to `[]` so no existing rows break.
+
+**Content to write (via `/admin/locations` → pencil icon → city editor):**
+
+For each city:
+- **Key Areas**: add 4–8 precinct cards (name + 1-sentence description)
+- **Content Sections**: add 2–3 sections with H2 headings. Example for Brisbane:
+  - "Brisbane's Commercial Refrigeration Market" → paragraphs about CBD density, food business count, HACCP compliance
+  - "Climate & Compliance" → subtropical heat, humidity, cold chain requirements
+  - "Frequently Asked Questions" → FAQ block with 3–4 city-specific questions
 
 ---
 
@@ -127,21 +149,24 @@ Add permanent 301 redirects from `/locations/[city]/[suburb]` → `/locations/[c
 
 ---
 
-## Files to Change (summary)
+## Files Changed (summary)
 
-| File | Change | Phase |
-|---|---|---|
-| `app/locations/[citySlug]/[suburbSlug]/page.tsx` | Add `robots: { index: false, follow: true }` in `generateMetadata` | 1a |
-| `app/sitemap.ts` | Remove `suburbRoutes` const and its spread from return | 1b |
-| `components/pages/CityHub.tsx` (or similar) | Enrich city page UI with case studies, local context | 2 |
-| Supabase `industries` table (via admin) | Add case studies, compliance content, industry-specific FAQs | 3 |
-| `next.config.ts` (optional) | Add 301 redirects from suburb → city | 4B |
-
----
-
-## What Was NOT Done
-
-No code changes have been made in this session. Everything above is agreed strategy only.
+| File | Change | Phase | Status |
+|---|---|---|---|
+| `app/locations/[citySlug]/[suburbSlug]/page.tsx` | `robots: { index: false, follow: true }` in `generateMetadata` | 1a | ✅ Was already present |
+| `app/sitemap.ts` | Removed `suburbRoutes` const, spread, and suburbs join from cities query | 1b | ✅ Done |
+| `lib/supabase/content.ts` | Added `local_context` and `key_areas` to `LocationCity` interface | 2 | ✅ Done |
+| `app/locations/[citySlug]/page.tsx` | Fetch `getAllTestimonials`, pass to `CityHub` | 2 | ✅ Done |
+| `components/pages/CityHub.tsx` | Added City Sections, Key Areas, Testimonials sections | 2 | ✅ Done |
+| `components/ContentBlockRenderer.tsx` | Extracted from ResourcePage — shared by CityHub and ResourcePage | 2 | ✅ Done |
+| `components/pages/ResourcePage.tsx` | Updated to import ContentBlockRenderer from shared file | 2 | ✅ Done |
+| `app/admin/locations/CityEditor.tsx` | New full-page city editor (metadata + key areas + sections/blocks) | 2 | ✅ Done |
+| `app/admin/locations/[id]/edit/page.tsx` | New edit route for cities | 2 | ✅ Done |
+| `app/admin/locations/LocationsClient.tsx` | Pencil icon now links to `/admin/locations/[id]/edit` | 2 | ✅ Done |
+| `supabase/migrations/20260502000029_city_seo_fields.sql` | Adds `city_sections` and `key_areas` columns | 2 | ⏳ Run against Supabase |
+| Supabase `location_cities` table | Fill `city_sections` and `key_areas` per city via `/admin/locations` | 2 | ⏳ Content to write |
+| Supabase `industries` table (via admin) | Add case studies, compliance content, industry-specific FAQs | 3 | ⏳ Pending |
+| `next.config.ts` (optional) | Add 301 redirects from suburb → city | 4B | ⏳ Pending decision |
 
 ---
 
@@ -151,3 +176,4 @@ No code changes have been made in this session. Everything above is agreed strat
 - The `data/locations.ts`, `data/industries.ts`, `data/brands.ts` files are **legacy** — not used by any app route. Don't edit these.
 - Admin panel is live at `/admin` — industry/brand content can be enriched without code changes.
 - Middleware only covers `/admin` routes. Public routes have no auth layer.
+- Testimonials have no `city_id` — all testimonials show on all city pages. If city-specific filtering is needed later, add a `city_id` FK column to the `testimonials` table.
