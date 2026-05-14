@@ -60,6 +60,12 @@ async function getOldSiteRedirects(): Promise<RedirectRule[]> {
 const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
+    // Cache transformed images for 30 days regardless of source Cache-Control headers.
+    // Prevents re-transforming the same Supabase image URLs on every ISR cycle.
+    minimumCacheTTL: 2592000,
+    // Limit the size ladder to reduce the number of unique transformations generated.
+    deviceSizes: [640, 828, 1080, 1200, 1920],
+    imageSizes: [32, 64, 96, 128, 256],
     remotePatterns: [
       {
         protocol: "https",

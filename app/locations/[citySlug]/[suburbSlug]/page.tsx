@@ -6,7 +6,7 @@ import { getRecentPosts } from "@/lib/supabase/posts";
 import { withRetry } from "@/lib/retry";
 import SuburbPage from "@/components/pages/SuburbPage";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ citySlug: string; suburbSlug: string }> };

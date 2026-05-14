@@ -4,7 +4,7 @@ import { getAllServices } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import Services from "@/components/pages/Services";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Services",

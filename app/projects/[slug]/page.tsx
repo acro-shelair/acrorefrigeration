@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getAllProjects, getProjectBySlug } from "@/lib/supabase/content";
+import { getProjectBySlug, getAllProjects } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import ProjectPage from "@/components/pages/ProjectPage";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ slug: string }> };
@@ -39,13 +39,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectPageRoute({ params }: Props) {
   const { slug } = await params;
   const supabase = createAdminClient();
-  const [project, allProjects] = await Promise.all([
+  const [project, related] = await Promise.all([
     withRetry(() => getProjectBySlug(supabase, slug)).catch(() => null),
-    withRetry(() => getAllProjects(supabase)).catch(() => []),
+    withRetry(() =>
+      supabase
+        .from("projects")
+        .select("id, slug, title, description, type, size")
+        .neq("slug", slug)
+        .order("position")
+        .limit(3)
+    ).then((r) => r.data ?? []).catch(() => []),
   ]);
   if (!project) notFound();
-
-  const related = allProjects.filter((p) => p.slug !== slug).slice(0, 3);
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",

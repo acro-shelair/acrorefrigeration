@@ -5,7 +5,7 @@ import { getAllBrands, getBrandBySlug } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import BrandPage from "@/components/pages/BrandPage";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ brandSlug: string }> };

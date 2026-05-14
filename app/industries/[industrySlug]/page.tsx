@@ -5,7 +5,7 @@ import { getAllIndustries, getIndustryBySlug } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import IndustryPage from "@/components/pages/IndustryPage";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ industrySlug: string }> };

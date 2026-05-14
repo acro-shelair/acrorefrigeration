@@ -4,7 +4,7 @@ import { getAllProjects } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import Projects from "@/components/pages/Projects";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Featured Projects",

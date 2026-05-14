@@ -4,7 +4,7 @@ import { getAllBrands, getAllOtherBrands } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import Brands from "@/components/pages/Brands";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Brands We Service",
