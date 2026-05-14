@@ -4,7 +4,7 @@ import { getAllCities } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import LocationsHub from "@/components/pages/LocationsHub";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Repairs Near You — Service Areas",

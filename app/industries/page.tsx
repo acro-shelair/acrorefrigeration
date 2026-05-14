@@ -4,7 +4,7 @@ import { getAllIndustries } from "@/lib/supabase/content";
 import { withRetry } from "@/lib/retry";
 import Industries from "@/components/pages/Industries";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Industries We Serve",

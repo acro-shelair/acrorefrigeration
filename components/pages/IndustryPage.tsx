@@ -89,6 +89,7 @@ const IndustryPage = ({
                 fill
                 sizes="(max-width: 768px) 100vw, 80vw"
                 className="object-cover"
+                priority
               />
             </motion.div>
           )}

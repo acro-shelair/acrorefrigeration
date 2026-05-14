@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getLegalPage } from "@/lib/supabase/legal";
 import TermsOfService from "@/components/pages/TermsOfService";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | Acro Refrigeration – Brisbane Commercial Refrigeration",

@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getLegalPage } from "@/lib/supabase/legal";
 import PrivacyPolicy from "@/components/pages/PrivacyPolicy";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Acro Refrigeration – Brisbane Commercial Refrigeration",

@@ -4,7 +4,7 @@ import { getPublishedPosts } from "@/lib/supabase/posts";
 import { withRetry } from "@/lib/retry";
 import Resources from "@/components/pages/Resources";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Guides, Articles & Resources",

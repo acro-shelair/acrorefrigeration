@@ -5,7 +5,7 @@ import { withRetry } from "@/lib/retry";
 import { faqSection, testimonialsSection } from "@/data/home";
 import { getAllIndustries, getAllBrands, getAllOtherBrands, getAllCities } from "@/lib/supabase/content";
 
-export const revalidate = 600;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Commercial Refrigeration Repair & Maintenance Brisbane",

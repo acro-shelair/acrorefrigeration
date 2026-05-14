@@ -5,7 +5,7 @@ import { getServiceBySlug, getPublishedServiceSlugs } from "@/lib/supabase/conte
 import { withRetry } from "@/lib/retry";
 import ServicePage from "@/components/pages/ServicePage";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ serviceSlug: string }> };

@@ -5,7 +5,7 @@ import { getPublishedPosts, getPostBySlug } from "@/lib/supabase/posts";
 import { withRetry } from "@/lib/retry";
 import ResourcePage from "@/components/pages/ResourcePage";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 type Props = { params: Promise<{ resourceSlug: string }> };

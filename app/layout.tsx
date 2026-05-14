@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { headers } from "next/headers";
+import { unstable_cache } from "next/cache";
 import { Providers } from "@/components/providers";
 import Navbar from "@/components/Navbar";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -46,19 +47,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const headersList = await headers();
-  const pathname = headersList.get("x-pathname") ?? "";
-  const isAdmin = pathname.startsWith("/admin") || pathname.startsWith("/auth");
-
-  const supabase = createAdminClient();
-  const [settings, navServices, navIndustries, navBrands, navCities] = isAdmin
-    ? [null, [], [], [], []]
-    : await Promise.all([
+// Cached for 1 hour — navbar data changes at most once per day.
+// The layout itself must stay dynamic (reads request headers), but the
+// Supabase queries don't need to run on every one of the 400K+ requests.
+const getNavData = unstable_cache(
+  async () => {
+    const supabase = createAdminClient();
+    const [settings, navServices, navIndustries, navBrands, navCities] =
+      await Promise.all([
         getSiteSettings(supabase),
         supabase
           .from("services")
@@ -92,6 +88,25 @@ export default async function RootLayout({
             }))
           ),
       ]);
+    return { settings, navServices, navIndustries, navBrands, navCities };
+  },
+  ["nav-data"],
+  { revalidate: 3600 }
+);
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isAdmin = pathname.startsWith("/admin") || pathname.startsWith("/auth");
+
+  const { settings, navServices, navIndustries, navBrands, navCities } = isAdmin
+    ? { settings: null, navServices: [], navIndustries: [], navBrands: [], navCities: [] }
+    : await getNavData();
+
   const phone = (settings as { phone?: string } | null)?.phone ?? "1300227600";
 
   return (
