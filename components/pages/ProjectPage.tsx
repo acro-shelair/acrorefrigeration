@@ -38,7 +38,9 @@ const cardVariant: Variants = {
   }),
 };
 
-const ProjectPage = ({ project, related }: { project: Project; related: Project[] }) => (
+type RelatedProject = Pick<Project, "id" | "slug" | "title" | "description" | "type" | "size">;
+
+const ProjectPage = ({ project, related }: { project: Project; related: RelatedProject[] }) => (
   <Layout>
     {/* Breadcrumb */}
     <section className="bg-secondary px-6 py-4 border-b border-border">
